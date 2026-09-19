@@ -48,7 +48,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     session({ session, token }) {
-      if (session.user) session.user.role = token.role;
+      if (session.user) {
+        // Type assertion added here to fix the Vercel build error
+        session.user.role = token.role as "admin" | "customer";
+      }
       return session;
     },
   },
