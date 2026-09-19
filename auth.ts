@@ -49,15 +49,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       if (session.user) {
-<<<<<<< HEAD
-        // Type assertion added here to fix the Vercel build error
-        session.user.role = token.role as "admin" | "customer";
-=======
         // Cast because Auth.js types JWT with an `[key: string]: unknown` index
         // signature — the augmentation in types/next-auth.d.ts does not reach
         // the @auth/core type this callback receives.
         session.user.role = token.role as "admin" | "customer" | undefined;
->>>>>>> d136282 (auth update)
       }
       return session;
     },
