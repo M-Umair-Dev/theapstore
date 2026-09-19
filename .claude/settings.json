@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test *)",
+      "Bash(ls -la \"D:/My Data/Certificates/TheApStore\" 2>/dev/null; echo \"---\"; ls \"D:/My Data/Certificates/\" | head)",
+      "Read(//d/My Data/Certificates/**)",
+      "Read(//d/My Data/**)",
+      "Read(//d/My Data/Certificates & Portfolio/**)",
+      "Bash(rm -rf \"D:/My Data/Certificates\")",
+      "Bash(node -e \"console.log\\(JSON.stringify\\(require\\('./package.json'\\).scripts,null,2\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "D:\\My Data\\Certificates\\TheApStore"
+    ]
+  }
+}

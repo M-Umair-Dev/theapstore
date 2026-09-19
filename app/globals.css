@@ -1,0 +1,145 @@
+:root {
+  /* Brand palette — the only colors in the codebase. */
+  --primary: #e50914;
+  --primary-dark: #b20710;
+  /* Lighter red for text and links sitting on black: #E50914 only reaches
+     4.4:1 against black, this reaches 6.5:1. Use it for anything readable. */
+  --primary-on-dark: #ff4d57;
+  --black: #000000;
+  --white: #ffffff;
+  --background: #ffffff;
+  --surface: #f7f7f7;
+  --text: #111111;
+  --muted: #666666;
+  --border: #e5e5e5;
+
+  /* Dark sections */
+  --dark-bg: var(--black);
+  --dark-text: var(--white);
+  --dark-muted: #a3a3a3;
+  --dark-border: #262626;
+
+  /* WhatsApp brand green — the one sanctioned exception to the palette,
+     because the button has to read as WhatsApp at a glance. */
+  --whatsapp: #25d366;
+  --whatsapp-dark: #1da851;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.12);
+
+  /* Motion */
+  --transition: 160ms ease;
+
+  /* Layout */
+  --container: 1200px;
+  --header-height: 72px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  line-height: 1.5;
+}
+
+main {
+  flex: 1;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+/* Dark section: set on any wrapper. */
+.dark {
+  background: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4 {
+  color: var(--dark-text);
+}
+
+/* Red on black fails contrast for body copy, so links inside dark sections and
+   the footer use the lighter red. Buttons keep their own colours. */
+.dark a:not(.btn):not(.chip),
+.site-footer a:not(.btn) {
+  color: var(--primary-on-dark);
+}
+
+.dark a:not(.btn):not(.chip):hover,
+.site-footer a:not(.btn):hover {
+  color: var(--white);
+  text-decoration: underline;
+}
