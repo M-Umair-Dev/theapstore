@@ -41,17 +41,49 @@ type CartValue = {
 const CartContext = createContext<CartValue | null>(null);
 const STORAGE_KEY = "theapstore.cart";
 
+/**
+ * Cart lines are snapshots, and the shape has changed since the first version.
+ * Anything already sitting in a visitor's localStorage has to be checked before
+ * it reaches a render — a line missing `title` or `price` crashes on
+ * `title.charAt` and prints "Rs. NaN".
+ */
+function isCartLine(value: unknown): value is CartLine {
+  if (typeof value !== "object" || value === null) return false;
+  const l = value as Partial<CartLine>;
+  return (
+    typeof l.slug === "string" &&
+    l.slug.length > 0 &&
+    typeof l.planId === "string" &&
+    l.planId.length > 0 &&
+    typeof l.title === "string" &&
+    l.title.length > 0 &&
+    typeof l.planName === "string" &&
+    typeof l.meta === "string" &&
+    typeof l.price === "number" &&
+    Number.isFinite(l.price) &&
+    typeof l.qty === "number" &&
+    Number.isFinite(l.qty) &&
+    l.qty >= 1
+  );
+}
+
+/** Parses stored JSON, dropping anything that no longer fits the shape. */
+function readStoredCart(raw: string | null): CartLine[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isCartLine) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setLines(JSON.parse(raw));
-    } catch {
-      // Corrupt or blocked storage — start empty rather than crash.
-    }
+    setLines(readStoredCart(localStorage.getItem(STORAGE_KEY)));
     setReady(true);
   }, []);
 
@@ -63,12 +95,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Keep one tab's cart in sync when another tab changes it.
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
-      if (e.key !== STORAGE_KEY || !e.newValue) return;
-      try {
-        setLines(JSON.parse(e.newValue));
-      } catch {
-        /* ignore */
-      }
+      if (e.key !== STORAGE_KEY) return;
+      setLines(readStoredCart(e.newValue));
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

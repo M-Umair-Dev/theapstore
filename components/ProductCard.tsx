@@ -1,16 +1,11 @@
 import Link from "next/link";
 import CardActions from "@/components/CardActions";
-import {
-  formatPrice,
-  getCategoryName,
-  priceFrom,
-  type Product,
-} from "@/lib/products";
+import { defaultLine, startingPrice } from "@/lib/options";
+import { formatPrice, getCategoryName, type Product } from "@/lib/products";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const plan = product.plans[0];
-  const from = priceFrom(product);
-  const ranged = product.plans.length > 1;
+  const from = startingPrice(product);
+  const ranged = (product.prices?.length ?? product.plans.length) > 1;
 
   return (
     <article className="card">
@@ -52,17 +47,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </p>
         <p className="card-warranty">{product.warranty}</p>
 
-        <CardActions
-          line={{
-            slug: product.slug,
-            planId: plan.id,
-            title: product.title,
-            planName: plan.name,
-            meta: plan.meta.join(" • "),
-            price: plan.price,
-          }}
-          disabled={product.comingSoon}
-        />
+        <CardActions line={defaultLine(product)} disabled={product.comingSoon} />
 
         <Link href={`/product/${product.slug}`} className="btn btn-ghost btn-sm">
           View details

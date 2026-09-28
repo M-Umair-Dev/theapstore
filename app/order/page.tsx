@@ -7,6 +7,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/products";
 import { site } from "@/lib/site";
+import { IMAGE_ACCEPT } from "@/lib/uploads";
 import { cartMessage, waLink } from "@/lib/whatsapp";
 
 const initial: OrderState = {};
@@ -43,13 +44,20 @@ export default function OrderPage() {
             <Link href="/shop" className="btn btn-primary">
               Continue shopping
             </Link>
+            <Link
+              href={`/track?reference=${encodeURIComponent(state.reference)}`}
+              className="btn btn-secondary"
+            >
+              Track this order
+            </Link>
             {whatsapp && (
               <a
                 href={whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-secondary"
+                className="btn btn-whatsapp"
               >
+                <WhatsAppIcon />
                 Chase it on WhatsApp
               </a>
             )}
@@ -158,6 +166,24 @@ export default function OrderPage() {
               </div>
 
               <div className="field field-full">
+                <label className="label" htmlFor="receipt">
+                  Payment screenshot
+                </label>
+                <input
+                  id="receipt"
+                  name="receipt"
+                  type="file"
+                  accept={IMAGE_ACCEPT}
+                  className="input"
+                />
+                <span className="hint">
+                  Upload the confirmation from your banking or wallet app. We
+                  check it against your order before delivering. JPEG, PNG, WebP,
+                  AVIF or GIF, up to 4 MB.
+                </span>
+              </div>
+
+              <div className="field field-full">
                 <label className="label" htmlFor="notes">
                   Notes (optional)
                 </label>
@@ -168,7 +194,7 @@ export default function OrderPage() {
                   placeholder="Anything we should know about your order. Mention your transaction ID here."
                 />
                 <span className="hint">
-                  Send the payment screenshot on WhatsApp to{" "}
+                  No screenshot handy? Send it on WhatsApp to{" "}
                   {site.whatsappDisplay}, or email it to {site.email} quoting
                   your reference.
                 </span>

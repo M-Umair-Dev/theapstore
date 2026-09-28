@@ -14,6 +14,51 @@ export type Plan = {
   badge?: string;
 };
 
+/* ---------- advanced options ----------
+   Simple products use `plans`. Products with a real choice matrix (Netflix,
+   Amazon) use `optionGroups` + `prices` instead, and the customer picks a
+   value for every group in order. */
+
+export type OptionChoice = {
+  id: string;
+  label: string;
+  /** For a "screens" group: how many device slots this choice grants. */
+  count?: number;
+  note?: string;
+};
+
+export type OptionGroup = {
+  id: string;
+  label: string;
+  /** Priced groups form the price matrix. Unpriced ones are qualifiers. */
+  priced?: boolean;
+  /**
+   * Multiplies the matrix price by the chosen choice's `count` — how the
+   * duration group works: 3 months costs three times the monthly price.
+   */
+  multiplies?: boolean;
+  /**
+   * "select"  — customer picks one choice.
+   * "slots"   — customer fills one slot per unit granted by `slotsFrom`,
+   *             picking a choice for each.
+   */
+  kind?: "select" | "slots";
+  /** For kind "slots": the group whose chosen `count` sets the slot total. */
+  slotsFrom?: string;
+  choices: OptionChoice[];
+};
+
+export type PriceRule = {
+  /** groupId -> choiceId, for the priced groups only. */
+  values: Record<string, string>;
+  price: number;
+  badge?: string;
+};
+
+/** A customer's answers. Every group maps to a list: one entry for "select",
+ *  one per slot for "slots". */
+export type Selection = Record<string, string[]>;
+
 export type Product = {
   slug: string;
   title: string;
@@ -27,6 +72,9 @@ export type Product = {
   warranty: string;
   specs: string[];
   plans: Plan[];
+  /** Present on products sold through the option matrix. */
+  optionGroups?: OptionGroup[];
+  prices?: PriceRule[];
   /** MIME type of the uploaded image. Absent means fall back to the letter tile. */
   imageContentType?: string;
   featured?: boolean;
@@ -71,13 +119,14 @@ export const categories: Category[] = [
     name: "IPTV",
     description: "Live TV, sports, movies and entertainment in one place.",
   },
+    {
+    slug: "uncategorized",
+    name: "Uncategorized",
+    description: "Any Random Product.",
+  },
 ];
 
 export const formatPrice = (n: number) => `Rs. ${n.toLocaleString("en-US")}`;
-
-/** Lowest plan price — what cards and the product summary show. */
-export const priceFrom = (p: Product) =>
-  p.plans.length ? Math.min(...p.plans.map((plan) => plan.price)) : 0;
 
 export const getCategory = (slug: string) =>
   categories.find((c) => c.slug === slug);

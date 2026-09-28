@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
-import { formatPrice, priceFrom, categories } from "@/lib/products";
+import { startingPrice } from "@/lib/options";
+import { formatPrice, categories } from "@/lib/products";
 import { listProducts } from "@/lib/repo";
 import { site } from "@/lib/site";
 
@@ -108,7 +109,9 @@ export default async function Home() {
               {promo.badges[0] ?? "Featured"}
             </span>
             <h3 style={{ marginTop: "var(--space-4)" }}>{promo.title}</h3>
-            <p className="promo-price">From {formatPrice(priceFrom(promo))}</p>
+            <p className="promo-price">
+              From {formatPrice(startingPrice(promo))}
+            </p>
             <p className="promo-meta">
               {promo.tagline}
               <br />

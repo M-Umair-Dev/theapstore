@@ -22,33 +22,50 @@ export const seedProducts: Product[] = [
       "Uninterrupted viewing with no screen-limit disruptions",
     ],
     featured: true,
-    plans: [
+    // Sold through the option matrix rather than fixed plans.
+    // Screens set the monthly price; the duration multiplies it by its month
+    // count. Device choice is a qualifier and does not change the price.
+    plans: [],
+    optionGroups: [
       {
-        id: "NFLX-1M-SINGLE",
-        name: "Single Screen",
-        meta: ["1 Screen", "4K Ultra HD", "1 Month"],
-        price: 549,
+        id: "duration",
+        label: "Duration",
+        multiplies: true,
+        choices: [
+          { id: "1m", label: "1 Month", count: 1 },
+          { id: "3m", label: "3 Months", count: 3 },
+          { id: "6m", label: "6 Months", count: 6 },
+          { id: "12m", label: "12 Months", count: 12 },
+        ],
       },
       {
-        id: "NFLX-1M-DUAL",
-        name: "Dual Screens",
-        meta: ["2 Screens", "4K Ultra HD", "1 Month"],
-        price: 1049,
+        id: "screens",
+        label: "Number of screens",
+        priced: true,
+        choices: [
+          { id: "s1", label: "1 Screen", count: 1 },
+          { id: "s2", label: "2 Screens", count: 2 },
+          { id: "s3", label: "3 Screens", count: 3 },
+          { id: "s5", label: "5 Screens — Full Account", count: 5 },
+        ],
       },
       {
-        id: "NFLX-1M-TRIPLE",
-        name: "Three Screens",
-        meta: ["3 Screens", "4K Ultra HD", "1 Month"],
-        price: 1499,
+        id: "device",
+        label: "Which device",
+        kind: "slots",
+        slotsFrom: "screens",
+        choices: [
+          { id: "mobile", label: "Mobile / Laptop" },
+          { id: "tv", label: "TV" },
+        ],
       },
-      {
-        id: "NFLX-1M-FULL",
-        name: "Full Account",
-        meta: ["5 Screens (Private)", "4K Ultra HD", "1 Month"],
-        price: 2250,
-        note: "Dedicated private access",
-        badge: "Best value",
-      },
+    ],
+    // Price per month, by screen count. Duration multiplies this.
+    prices: [
+      { values: { screens: "s1" }, price: 549 },
+      { values: { screens: "s2" }, price: 1049 },
+      { values: { screens: "s3" }, price: 1499 },
+      { values: { screens: "s5" }, price: 2250 },
     ],
   },
   {
@@ -67,26 +84,38 @@ export const seedProducts: Product[] = [
       "Warranty covers the full plan duration",
     ],
     featured: true,
-    plans: [
+    // Sold through the option matrix. No device group on this one.
+    // Same shape as Netflix: screens set the monthly price, duration multiplies.
+    plans: [],
+    optionGroups: [
       {
-        id: "PV-1M",
-        name: "1 Month",
-        meta: ["1 Profile", "Full HD", "1 Month"],
-        price: 199,
+        id: "duration",
+        label: "Duration",
+        multiplies: true,
+        choices: [
+          { id: "1m", label: "1 Month", count: 1 },
+          { id: "3m", label: "3 Months", count: 3 },
+          { id: "6m", label: "6 Months", count: 6 },
+          { id: "12m", label: "12 Months", count: 12 },
+        ],
       },
       {
-        id: "PV-3M",
-        name: "3 Months",
-        meta: ["1 Profile", "Full HD", "3 Months"],
-        price: 449,
+        id: "screens",
+        label: "Number of screens",
+        priced: true,
+        choices: [
+          { id: "s1", label: "1 Screen", count: 1 },
+          { id: "s2", label: "2 Screens", count: 2 },
+          { id: "s3", label: "3 Screens", count: 3 },
+          { id: "s5", label: "5 Screens — Full Account", count: 5 },
+        ],
       },
-      {
-        id: "PV-6M",
-        name: "6 Months",
-        meta: ["1 Profile", "Full HD", "6 Months"],
-        price: 799,
-        badge: "Best value",
-      },
+    ],
+    prices: [
+      { values: { screens: "s1" }, price: 199 },
+      { values: { screens: "s2" }, price: 349 },
+      { values: { screens: "s3" }, price: 499 },
+      { values: { screens: "s5" }, price: 749 },
     ],
   },
   {

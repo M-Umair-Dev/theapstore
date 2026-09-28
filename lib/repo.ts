@@ -1,15 +1,13 @@
 import { getDb } from "./mongodb.ts";
+import { orderStatuses, type OrderStatus } from "./order-status.ts";
 import type { Product } from "./products.ts";
 
 /* ---------------- types ---------------- */
 
-export type OrderStatus = "pending" | "verified" | "delivered" | "cancelled";
-export const orderStatuses: OrderStatus[] = [
-  "pending",
-  "verified",
-  "delivered",
-  "cancelled",
-];
+// Re-exported so existing importers keep working; the canonical definitions
+// live in order-status.ts, which client components can import safely.
+export { orderStatuses };
+export type { OrderStatus };
 
 export type OrderItem = {
   slug: string;
@@ -31,8 +29,22 @@ export type Order = {
   total: number;
   paymentMethod: string;
   notes?: string;
+  /** MIME type of the payment screenshot, if the customer uploaded one. */
+  receiptContentType?: string;
   status: OrderStatus;
   createdAt: Date;
+};
+
+/**
+ * Payment screenshots, keyed by order reference. Separate from the order
+ * document for the same reason as product images: the admin order list should
+ * not pull megabytes of image data to render a table.
+ */
+export type OrderReceipt = {
+  reference: string;
+  contentType: string;
+  data: string;
+  updatedAt: Date;
 };
 
 export type Role = "admin" | "customer";
@@ -67,6 +79,7 @@ const products = () => getDb().collection<ProductDoc>("products");
 const orders = () => getDb().collection<Order>("orders");
 const users = () => getDb().collection<AppUser>("users");
 const images = () => getDb().collection<ProductImage>("images");
+const receipts = () => getDb().collection<OrderReceipt>("receipts");
 
 let indexesReady: Promise<void> | null = null;
 
@@ -80,6 +93,7 @@ function ensureIndexes() {
     orders().createIndex({ createdAt: -1 }),
     users().createIndex({ email: 1 }, { unique: true }),
     images().createIndex({ slug: 1 }, { unique: true }),
+    receipts().createIndex({ reference: 1 }, { unique: true }),
   ]).then(() => undefined);
   return indexesReady;
 }
@@ -223,12 +237,50 @@ export async function getOrder(reference: string) {
   return orders().findOne({ reference });
 }
 
+/**
+ * Tracking lookup. Requiring the email is what stops a guessed reference from
+ * exposing a stranger's name, phone number and order contents — a five
+ * character reference is not a secret.
+ */
+export async function findOrderForTracking(reference: string, email: string) {
+  await ensureIndexes();
+  return orders().findOne({
+    reference: reference.trim().toUpperCase(),
+    "customer.email": email.trim().toLowerCase(),
+  });
+}
+
 export async function updateOrderStatus(
   reference: string,
   status: OrderStatus,
 ) {
   await ensureIndexes();
   await orders().updateOne({ reference }, { $set: { status } });
+}
+
+/* ---------------- payment receipts ---------------- */
+
+export async function saveOrderReceipt(
+  reference: string,
+  contentType: string,
+  base64: string,
+) {
+  await ensureIndexes();
+  await Promise.all([
+    receipts().updateOne(
+      { reference },
+      { $set: { reference, contentType, data: base64, updatedAt: new Date() } },
+      { upsert: true },
+    ),
+    // Denormalised onto the order so the admin list knows a screenshot exists
+    // without querying the receipts collection per row.
+    orders().updateOne({ reference }, { $set: { receiptContentType: contentType } }),
+  ]);
+}
+
+export async function getOrderReceipt(reference: string) {
+  await ensureIndexes();
+  return receipts().findOne({ reference });
 }
 
 /* ---------------- users ---------------- */
@@ -274,8 +326,7 @@ export async function adminStats() {
   ]);
 
   const earningStatuses: OrderStatus[] = ["verified", "delivered"];
-  const revenue = orderList
-    .filter((o) => earningStatuses.includes(o.status))
+  const revenue = orderList    .filter((o) => earningStatuses.includes(o.status))
     .reduce((sum, o) => sum + o.total, 0);
 
   return {

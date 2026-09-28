@@ -1,4 +1,5 @@
-import { priceFrom, type Product } from "./products";
+import { startingPrice } from "./options";
+import type { Product } from "./products";
 
 export const PAGE_SIZE = 9;
 
@@ -39,14 +40,15 @@ export function filterProducts(
   const range = priceBands.find((b) => b.slug === band);
   if (range) {
     list = list.filter((p) => {
-      const from = priceFrom(p);
+      const from = startingPrice(p);
       return from >= range.min && from <= range.max;
     });
   }
 
-  if (sort === "price-asc") list.sort((a, b) => priceFrom(a) - priceFrom(b));
+  if (sort === "price-asc")
+    list.sort((a, b) => startingPrice(a) - startingPrice(b));
   else if (sort === "price-desc")
-    list.sort((a, b) => priceFrom(b) - priceFrom(a));
+    list.sort((a, b) => startingPrice(b) - startingPrice(a));
   // ponytail: "newest" is insertion order reversed — there is no addedAt field
   // yet. Add one and sort on it when the catalogue starts changing often.
   else if (sort === "newest") list.reverse();

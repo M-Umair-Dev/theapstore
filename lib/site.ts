@@ -22,6 +22,7 @@ export const site = {
     { href: "/", label: "Home" },
     { href: "/shop", label: "Shop" },
     { href: "/categories", label: "Categories" },
+    { href: "/track", label: "Track Order" },
     { href: "/reviews", label: "Reviews" },
     { href: "/about", label: "About Us" },
     { href: "/blog", label: "Blog" },
@@ -33,6 +34,7 @@ export const site = {
       links: [
         { href: "/shop", label: "All Products" },
         { href: "/categories", label: "Categories" },
+        { href: "/track", label: "Track Order" },
         { href: "/reviews", label: "Reviews" },
       ],
     },

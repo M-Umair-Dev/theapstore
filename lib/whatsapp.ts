@@ -1,5 +1,4 @@
 import { site } from "./site";
-import type { Product, Plan } from "./products";
 
 export const waEnabled = site.whatsapp.length > 0;
 
@@ -9,25 +8,7 @@ export function waLink(message: string): string | null {
   return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
 }
 
-export function orderMessage({
-  product,
-  plan,
-}: {
-  product: Product;
-  plan: Plan;
-}): string {
-  return [
-    `Hello ${site.name}, I would like to order:`,
-    "",
-    `Product: ${product.title}`,
-    `Plan: ${plan.name}`,
-    `Details: ${plan.meta.join(", ")}`,
-    `Price: Rs. ${plan.price.toLocaleString("en-US")}`,
-    `Product ID: ${plan.id}`,
-  ].join("\n");
-}
-
-/** Whole-cart message, used by the cart and order pages. */
+/** Whole-cart message, used by cards, the product page, the cart and checkout. */
 export function cartMessage(
   lines: { title: string; planName: string; meta: string; price: number; qty: number }[],
   total: number,

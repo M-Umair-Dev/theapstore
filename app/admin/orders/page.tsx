@@ -118,6 +118,31 @@ export default async function AdminOrders({
               </table>
             </div>
 
+            <div className="receipt-block">
+              <div className="stat-label">Payment screenshot</div>
+              {order.receiptContentType ? (
+                <>
+                  <a
+                    href={`/api/receipt/${order.reference}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/receipt/${order.reference}`}
+                      alt={`Payment screenshot for ${order.reference}`}
+                    />
+                  </a>
+                  <p className="hint">Click to open full size.</p>
+                </>
+              ) : (
+                <p className="hint">
+                  No screenshot uploaded. Ask the customer to send it on
+                  WhatsApp or email before delivering.
+                </p>
+              )}
+            </div>
+
             <form action={updateOrderStatusAction} className="form-actions">
               <input type="hidden" name="reference" value={order.reference} />
               <select

@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { saveProductAction, type ActionState } from "@/app/admin/actions";
-import { categories, type Product } from "@/lib/products";
+import OptionsEditor from "@/components/OptionsEditor";
+import {
+  categories,
+  type OptionGroup,
+  type PriceRule,
+  type Product,
+} from "@/lib/products";
 
 const initial: ActionState = {};
 
@@ -45,6 +51,14 @@ export default function ProductForm({ product }: { product?: Product }) {
       : [newRow()],
   );
 
+  const [advanced, setAdvanced] = useState(
+    Boolean(product?.optionGroups?.length),
+  );
+  const [groups, setGroups] = useState<OptionGroup[]>(
+    product?.optionGroups ?? [],
+  );
+  const [prices, setPrices] = useState<PriceRule[]>(product?.prices ?? []);
+
   const patch = (key: string, field: keyof Row, value: string) =>
     setRows((prev) =>
       prev.map((r) => (r.key === key ? { ...r, [field]: value } : r)),
@@ -55,6 +69,18 @@ export default function ProductForm({ product }: { product?: Product }) {
       {product && (
         <input type="hidden" name="originalSlug" value={product.slug} />
       )}
+
+      {/* the option matrix is nested, so it travels as JSON rather than as
+          dozens of indexed form fields */}
+      <input
+        type="hidden"
+        name="options"
+        value={
+          advanced && groups.length > 0
+            ? JSON.stringify({ groups, prices })
+            : ""
+        }
+      />
 
       <div className="admin-panel">
         <h2>Product</h2>
@@ -244,7 +270,35 @@ export default function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <div className="admin-panel">
-        <h2>Plans</h2>
+        <h2>Advanced options</h2>
+        <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
+          Turn this on for products sold by duration, screen count and device —
+          like Netflix or Amazon. The simple plans list is hidden while it is on.
+        </p>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={advanced}
+            onChange={(e) => setAdvanced(e.target.checked)}
+          />
+          Sell this product through the option matrix
+        </label>
+      </div>
+
+      {advanced && (
+        <OptionsEditor
+          groups={groups}
+          prices={prices}
+          onChange={({ groups: g, prices: p }) => {
+            setGroups(g);
+            setPrices(p);
+          }}
+        />
+      )}
+
+      {!advanced && (
+        <div className="admin-panel">
+          <h2>Plans</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
           At least one plan is required. Price is the full price for that plan in
           rupees.
@@ -363,7 +417,8 @@ export default function ProductForm({ product }: { product?: Product }) {
         >
           Add another plan
         </button>
-      </div>
+        </div>
+      )}
 
       {state.error && (
         <p className="form-error" role="alert">

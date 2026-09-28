@@ -143,3 +143,64 @@ select {
   color: var(--white);
   text-decoration: underline;
 }
+
+/* ---------- Status pills ----------
+   Defined here rather than in ui.css because both the storefront (order
+   tracking) and the admin panel use them on opposite backgrounds. */
+
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pill-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.pill-ok {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+
+.pill-off {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* On black surfaces the light variants would disappear. */
+.dark .pill,
+.admin-shell .pill {
+  border-color: var(--dark-border);
+  color: var(--dark-muted);
+}
+
+.dark .pill-primary,
+.admin-shell .pill-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.dark .pill-ok,
+.admin-shell .pill-ok {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--black);
+}
+
+.dark .pill-off,
+.admin-shell .pill-off {
+  background: transparent;
+  border-color: var(--primary-on-dark);
+  color: var(--primary-on-dark);
+}

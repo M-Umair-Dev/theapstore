@@ -224,38 +224,6 @@
   justify-content: flex-end;
 }
 
-/* ---------- Pills ---------- */
-
-.pill {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border: 1px solid var(--dark-border);
-  color: var(--dark-muted);
-}
-
-.pill-primary {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--white);
-}
-
-.pill-ok {
-  background: var(--white);
-  border-color: var(--white);
-  color: var(--black);
-}
-
-.pill-off {
-  background: transparent;
-  border-color: var(--primary-on-dark);
-  color: var(--primary-on-dark);
-}
-
 /* ---------- Admin form ---------- */
 
 .admin-form {
@@ -363,6 +331,23 @@
   gap: var(--space-4);
   justify-items: start;
   margin-bottom: var(--space-5);
+}
+
+/* Payment screenshot attached to an order. */
+.receipt-block {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-bottom: var(--space-5);
+}
+
+.receipt-block img {
+  max-width: 320px;
+  max-height: 240px;
+  object-fit: contain;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #111111;
 }
 
 .image-preview img {

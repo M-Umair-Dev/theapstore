@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { deleteProductAction } from "@/app/admin/actions";
 import ConfirmSubmit from "@/components/ConfirmSubmit";
-import { formatPrice, getCategoryName, priceFrom } from "@/lib/products";
+import { startingPrice } from "@/lib/options";
+import { formatPrice, getCategoryName } from "@/lib/products";
 import { listProducts } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
@@ -68,7 +69,9 @@ export default async function AdminProducts({
                       {getCategoryName(product.category)}
                     </td>
                     <td>{product.plans.length}</td>
-                    <td className="nowrap">{formatPrice(priceFrom(product))}</td>
+                    <td className="nowrap">
+                      {formatPrice(startingPrice(product))}
+                    </td>
                     <td>
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                         {product.featured && (
