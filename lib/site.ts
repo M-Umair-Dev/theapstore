@@ -10,9 +10,9 @@ export const site = {
   since: 2020,
   email: "hello@theapstore.com",
   /** E.164 without "+". Leave empty to hide every WhatsApp action. */
-  whatsapp: "923051257000",
+  whatsapp: "923404000618",
   /** Display form, shown to customers. */
-  whatsappDisplay: "+92 305 1257000",
+  whatsappDisplay: "+92 340 4000618",
   social: {
     linkedin: "https://linkedin.com",
     instagram: "https://instagram.com",

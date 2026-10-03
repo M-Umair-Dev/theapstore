@@ -101,7 +101,7 @@ export default function ContactPage() {
                 rel="noopener noreferrer"
                 style={{ color: "var(--primary)" }}
               >
-                Send a message
+                {site.whatsappDisplay}
               </a>
             </div>
           )}
