@@ -240,7 +240,8 @@ export default function OrderPage() {
                 {item.title}
                 <br />
                 <span className="cart-meta">
-                  {item.planName} × {item.qty}
+                  {item.planName}
+                  {item.meta ? ` • ${item.meta}` : ""} × {item.qty}
                 </span>
               </span>
               <strong>{formatPrice(item.price * item.qty)}</strong>

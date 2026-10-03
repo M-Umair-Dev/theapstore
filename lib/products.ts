@@ -22,8 +22,6 @@ export type Plan = {
 export type OptionChoice = {
   id: string;
   label: string;
-  /** For a "screens" group: how many device slots this choice grants. */
-  count?: number;
   note?: string;
 };
 
@@ -33,18 +31,21 @@ export type OptionGroup = {
   /** Priced groups form the price matrix. Unpriced ones are qualifiers. */
   priced?: boolean;
   /**
-   * Multiplies the matrix price by the chosen choice's `count` — how the
-   * duration group works: 3 months costs three times the monthly price.
+   * "select" — pick one choice.
+   * "multi"  — pick any number, e.g. the package's allowed devices.
    */
-  multiplies?: boolean;
+  kind?: "select" | "multi";
   /**
-   * "select"  — customer picks one choice.
-   * "slots"   — customer fills one slot per unit granted by `slotsFrom`,
-   *             picking a choice for each.
+   * Hide this group while another group holds one of the listed choices —
+   * how the device picker disappears for a Full Account.
    */
-  kind?: "select" | "slots";
-  /** For kind "slots": the group whose chosen `count` sets the slot total. */
-  slotsFrom?: string;
+  hideWhen?: { groupId: string; choiceIds: string[] };
+  /**
+   * Device allocation. The ticks in this group must total exactly the number
+   * the referenced group's current choice asks for — one device per screen.
+   * A repeated choice id is a quantity, so `["ml","ml","tv"]` is 2 + 1.
+   */
+  quantityFrom?: { groupId: string; perChoice: Record<string, number> };
   choices: OptionChoice[];
 };
 
@@ -55,9 +56,13 @@ export type PriceRule = {
   badge?: string;
 };
 
-/** A customer's answers. Every group maps to a list: one entry for "select",
- *  one per slot for "slots". */
+/** A customer's answers. Every group maps to a list: exactly one entry for a
+ *  "select" group, one per ticked choice for a "multi" group. */
 export type Selection = Record<string, string[]>;
+
+/** Which admin editor a product opens in. Purely a UI concern — every type
+ *  stores the same optionGroups/prices structure. */
+export type ProductType = "generic" | "netflix" | "prime";
 
 export type Product = {
   slug: string;
@@ -75,6 +80,8 @@ export type Product = {
   /** Present on products sold through the option matrix. */
   optionGroups?: OptionGroup[];
   prices?: PriceRule[];
+  /** Defaults to "generic" when absent — every existing product. */
+  productType?: ProductType;
   /** MIME type of the uploaded image. Absent means fall back to the letter tile. */
   imageContentType?: string;
   featured?: boolean;

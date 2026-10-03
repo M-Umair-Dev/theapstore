@@ -983,6 +983,45 @@
   margin-top: var(--space-4);
 }
 
+/* Multi-select group (package-level device set). */
+.check-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.check-list .check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+}
+
+.check-list .check:hover {
+  border-color: var(--primary);
+}
+
+.check-list .check input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.check-list .check .plan-meta {
+  display: block;
+}
+
 .slot {
   display: flex;
   flex-wrap: wrap;
@@ -1063,6 +1102,89 @@
   font-size: 13px;
   line-height: 1.6;
   color: var(--muted);
+}
+
+/* ---------- Device allocation steppers ---------- */
+
+.qty-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.qty-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.qty-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.qty-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.qty-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-value {
+  min-width: 32px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.qty-status {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.qty-status.is-done {
+  color: var(--text);
+}
+
+.helper-text.is-warning {
+  color: var(--primary-dark);
+  font-weight: 600;
 }
 
 .spec-list,

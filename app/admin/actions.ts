@@ -3,7 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentAdmin, signOut } from "@/auth";
-import { categories, slugify, type OptionChoice, type OptionGroup, type Plan, type PriceRule, type Product } from "@/lib/products";
+import {
+  categories,
+  slugify,
+  type OptionChoice,
+  type OptionGroup,
+  type Plan,
+  type PriceRule,
+  type Product,
+  type ProductType,
+} from "@/lib/products";
 import {
   deleteProduct,
   deleteProductImage,
@@ -108,32 +117,23 @@ function parseOptions(raw: string): {
       if (!cid || !clabel) {
         return { error: `Every choice in "${label}" needs a label.` };
       }
-      const count =
-        typeof c.count === "number" && c.count > 0
-          ? Math.floor(c.count)
-          : undefined;
-      choices.push({ id: cid, label: clabel, ...(count ? { count } : {}) });
+      const note = String(c.note ?? "").trim();
+      choices.push({ id: cid, label: clabel, ...(note ? { note } : {}) });
     }
     if (choices.length === 0) {
       return { error: `"${label}" needs at least one choice.` };
     }
 
-    const kind = g.kind === "slots" ? "slots" : "select";
-    const slotsFrom =
-      kind === "slots" ? String(g.slotsFrom ?? "").trim() : "";
-    if (kind === "slots" && !slotsFrom) {
-      return {
-        error: `"${label}" needs a group to take its number of slots from.`,
-      };
-    }
+    const kind = g.kind === "multi" ? "multi" : "select";
+    const hideWhen = g.hideWhen;
 
     groups.push({
       id,
       label,
       priced: Boolean(g.priced),
-      multiplies: Boolean(g.multiplies),
       kind,
-      ...(slotsFrom ? { slotsFrom } : {}),
+      ...(hideWhen ? { hideWhen } : {}),
+      ...(g.quantityFrom ? { quantityFrom: g.quantityFrom } : {}),
       choices,
     });
   }
@@ -142,26 +142,61 @@ function parseOptions(raw: string): {
     return { error: "Two option groups share an id. Remove one and add it again." };
   }
 
-  const slotGroup = groups.find((g) => g.kind === "slots");
-  if (slotGroup?.slotsFrom && !groups.some((g) => g.id === slotGroup.slotsFrom)) {
-    return {
-      error: `"${slotGroup.label}" points at a group that no longer exists.`,
-    };
+  // hideWhen can only be checked once every group is known.
+  for (const g of groups) {
+    const rule = g.hideWhen;
+    if (!rule) continue;
+
+    const source = groups.find((x) => x.id === rule.groupId);
+    if (!source) {
+      return { error: `"${g.label}" hides on a group that no longer exists.` };
+    }
+
+    const valid = Array.isArray(rule.choiceIds)
+      ? rule.choiceIds.filter((id) => source.choices.some((c) => c.id === id))
+      : [];
+    if (valid.length === 0) {
+      return {
+        error: `"${g.label}" is set to hide, but no choice was picked to trigger it.`,
+      };
+    }
+
+    g.hideWhen = { groupId: source.id, choiceIds: valid };
+  }
+
+  // Same for quantityFrom: it names another group's choices, so it can only be
+  // checked once every group is in hand. A device group without a usable rule
+  // is dropped rather than left to reject every basket at checkout.
+  for (const g of groups) {
+    const rule = g.quantityFrom;
+    if (!rule) continue;
+
+    if (g.kind !== "multi") {
+      delete g.quantityFrom;
+      continue;
+    }
+
+    const driver = groups.find((x) => x.id === rule.groupId && x.id !== g.id);
+    const perChoice: Record<string, number> = {};
+
+    if (driver) {
+      for (const c of driver.choices) {
+        const n = Math.trunc(Number(rule.perChoice?.[c.id] ?? 0));
+        perChoice[c.id] = Number.isFinite(n) && n > 0 ? n : 0;
+      }
+    }
+
+    if (!driver || !Object.values(perChoice).some((n) => n > 0)) {
+      delete g.quantityFrom;
+      continue;
+    }
+
+    g.quantityFrom = { groupId: driver.id, perChoice };
   }
 
   const priced = groups.filter((g) => g.priced);
   if (priced.length === 0) {
     return { error: 'Tick "Sets the price" on at least one group.' };
-  }
-
-  // A multiplier with no unit count multiplies by 1, which silently does
-  // nothing — reject it instead.
-  for (const g of groups.filter((x) => x.multiplies)) {
-    if (g.choices.some((c) => !c.count || c.count < 1)) {
-      return {
-        error: `Every choice in "${g.label}" needs a number of units (months).`,
-      };
-    }
   }
 
   const rawPrices = Array.isArray(data.prices) ? data.prices : [];
@@ -210,10 +245,21 @@ function parseProduct(fd: FormData): { product?: Product; error?: string } {
   if (options.error) return { error: options.error };
   const advanced = Boolean(options.groups);
 
+  const rawType = str(fd, "productType");
+  const productType: ProductType =
+    rawType === "netflix" || rawType === "prime" ? rawType : "generic";
+
   if (!title) return { error: "Title is required." };
   if (!slug) return { error: "Slug could not be generated — set one manually." };
   if (!categories.some((c) => c.slug === category)) {
     return { error: "Pick a valid category." };
+  }
+
+  if (productType !== "generic" && !advanced) {
+    return {
+      error:
+        "Netflix and Prime products need the duration × screen prices filled in.",
+    };
   }
 
   // A product is sold either through simple plans or through the option
@@ -248,6 +294,7 @@ function parseProduct(fd: FormData): { product?: Product; error?: string } {
       ...(advanced
         ? { optionGroups: options.groups, prices: options.prices }
         : {}),
+      productType,
       featured: fd.get("featured") === "on",
       comingSoon: fd.get("comingSoon") === "on",
     },

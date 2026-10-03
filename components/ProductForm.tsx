@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { saveProductAction, type ActionState } from "@/app/admin/actions";
+import NetflixEditor, {
+  ALL_DEVICE_IDS,
+  buildGroups,
+} from "@/components/NetflixEditor";
 import OptionsEditor from "@/components/OptionsEditor";
 import {
   categories,
   type OptionGroup,
   type PriceRule,
   type Product,
+  type ProductType,
 } from "@/lib/products";
 
 const initial: ActionState = {};
@@ -58,6 +63,24 @@ export default function ProductForm({ product }: { product?: Product }) {
     product?.optionGroups ?? [],
   );
   const [prices, setPrices] = useState<PriceRule[]>(product?.prices ?? []);
+  const [productType, setProductType] = useState<ProductType>(
+    product?.productType ?? "generic",
+  );
+
+  /**
+   * Switching to Netflix or Prime seeds the fixed structure, so the admin lands
+   * on a usable grid instead of an empty one. Existing generic groups are left
+   * alone until they actually switch.
+   */
+  function chooseType(next: ProductType) {
+    setProductType(next);
+    if (next === "generic") return;
+
+    const shaped =
+      groups.some((g) => g.id === "duration") &&
+      groups.some((g) => g.id === "screens");
+    if (!shaped) setGroups(buildGroups(ALL_DEVICE_IDS));
+  }
 
   const patch = (key: string, field: keyof Row, value: string) =>
     setRows((prev) =>
@@ -76,7 +99,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         type="hidden"
         name="options"
         value={
-          advanced && groups.length > 0
+          (advanced || productType !== "generic") && groups.length > 0
             ? JSON.stringify({ groups, prices })
             : ""
         }
@@ -270,23 +293,34 @@ export default function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <div className="admin-panel">
-        <h2>Advanced options</h2>
+        <h2>Product type</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
-          Turn this on for products sold by duration, screen count and device —
-          like Netflix or Amazon. The simple plans list is hidden while it is on.
+          Generic products use the plans list, or the free-form option matrix if
+          you turn it on. Netflix and Amazon Prime use the fixed duration ×
+          screen grid with per-combination prices.
         </p>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={advanced}
-            onChange={(e) => setAdvanced(e.target.checked)}
-          />
-          Sell this product through the option matrix
-        </label>
+        <div className="form-row">
+          <div className="field">
+            <label className="label" htmlFor="productType">
+              Variation type
+            </label>
+            <select
+              id="productType"
+              name="productType"
+              className="select"
+              value={productType}
+              onChange={(e) => chooseType(e.target.value as ProductType)}
+            >
+              <option value="generic">Generic product</option>
+              <option value="netflix">Netflix</option>
+              <option value="prime">Amazon Prime Video</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      {advanced && (
-        <OptionsEditor
+      {productType !== "generic" ? (
+        <NetflixEditor
           groups={groups}
           prices={prices}
           onChange={({ groups: g, prices: p }) => {
@@ -294,9 +328,38 @@ export default function ProductForm({ product }: { product?: Product }) {
             setPrices(p);
           }}
         />
+      ) : (
+        <>
+          <div className="admin-panel">
+            <h2>Advanced options</h2>
+            <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
+              Turn this on for generic products sold through a choice matrix.
+              The simple plans list is hidden while it is on.
+            </p>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={advanced}
+                onChange={(e) => setAdvanced(e.target.checked)}
+              />
+              Sell this product through the option matrix
+            </label>
+          </div>
+
+          {advanced && (
+            <OptionsEditor
+              groups={groups}
+              prices={prices}
+              onChange={({ groups: g, prices: p }) => {
+                setGroups(g);
+                setPrices(p);
+              }}
+            />
+          )}
+        </>
       )}
 
-      {!advanced && (
+      {productType === "generic" && !advanced && (
         <div className="admin-panel">
           <h2>Plans</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>

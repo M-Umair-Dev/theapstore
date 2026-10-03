@@ -22,50 +22,67 @@ export const seedProducts: Product[] = [
       "Uninterrupted viewing with no screen-limit disruptions",
     ],
     featured: true,
-    // Sold through the option matrix rather than fixed plans.
-    // Screens set the monthly price; the duration multiplies it by its month
-    // count. Device choice is a qualifier and does not change the price.
+    // Netflix-style product: duration × screens priced individually, devices
+    // chosen as a package-level set and hidden on Full Account.
+    // Prices below are placeholders — edit them in the admin panel.
     plans: [],
+    productType: "netflix",
     optionGroups: [
       {
         id: "duration",
-        label: "Duration",
-        multiplies: true,
+        label: "Select Duration",
+        priced: true,
         choices: [
-          { id: "1m", label: "1 Month", count: 1 },
-          { id: "3m", label: "3 Months", count: 3 },
-          { id: "6m", label: "6 Months", count: 6 },
-          { id: "12m", label: "12 Months", count: 12 },
+          { id: "1m", label: "1 Month" },
+          { id: "3m", label: "3 Months" },
+          { id: "6m", label: "6 Months" },
+          { id: "12m", label: "12 Months" },
         ],
       },
       {
         id: "screens",
-        label: "Number of screens",
+        label: "Select Screen",
         priced: true,
         choices: [
-          { id: "s1", label: "1 Screen", count: 1 },
-          { id: "s2", label: "2 Screens", count: 2 },
-          { id: "s3", label: "3 Screens", count: 3 },
-          { id: "s5", label: "5 Screens — Full Account", count: 5 },
+          { id: "s1", label: "1 Screen" },
+          { id: "s2", label: "2 Screens" },
+          { id: "s3", label: "3 Screens" },
+          { id: "full", label: "Full Account" },
         ],
       },
       {
         id: "device",
-        label: "Which device",
-        kind: "slots",
-        slotsFrom: "screens",
+        label: "Select Devices",
+        kind: "multi",
+        hideWhen: { groupId: "screens", choiceIds: ["full"] },
+        // One allocation per screen: a 2-screen package takes two devices.
+        quantityFrom: {
+          groupId: "screens",
+          perChoice: { s1: 1, s2: 2, s3: 3, full: 0 },
+        },
         choices: [
-          { id: "mobile", label: "Mobile / Laptop" },
+          { id: "ml", label: "Mobile / Laptop" },
           { id: "tv", label: "TV" },
         ],
       },
     ],
-    // Price per month, by screen count. Duration multiplies this.
     prices: [
-      { values: { screens: "s1" }, price: 549 },
-      { values: { screens: "s2" }, price: 1049 },
-      { values: { screens: "s3" }, price: 1499 },
-      { values: { screens: "s5" }, price: 2250 },
+      { values: { duration: "1m", screens: "s1" }, price: 549 },
+      { values: { duration: "1m", screens: "s2" }, price: 1049 },
+      { values: { duration: "1m", screens: "s3" }, price: 1499 },
+      { values: { duration: "1m", screens: "full" }, price: 2250 },
+      { values: { duration: "3m", screens: "s1" }, price: 1499 },
+      { values: { duration: "3m", screens: "s2" }, price: 2899 },
+      { values: { duration: "3m", screens: "s3" }, price: 3999 },
+      { values: { duration: "3m", screens: "full" }, price: 5999 },
+      { values: { duration: "6m", screens: "s1" }, price: 2799 },
+      { values: { duration: "6m", screens: "s2" }, price: 5399 },
+      { values: { duration: "6m", screens: "s3" }, price: 7499 },
+      { values: { duration: "6m", screens: "full" }, price: 10999 },
+      { values: { duration: "12m", screens: "s1" }, price: 4999 },
+      { values: { duration: "12m", screens: "s2" }, price: 9499 },
+      { values: { duration: "12m", screens: "s3" }, price: 13499 },
+      { values: { duration: "12m", screens: "full" }, price: 19999 },
     ],
   },
   {
@@ -84,38 +101,65 @@ export const seedProducts: Product[] = [
       "Warranty covers the full plan duration",
     ],
     featured: true,
-    // Sold through the option matrix. No device group on this one.
-    // Same shape as Netflix: screens set the monthly price, duration multiplies.
+    // Same shape as Netflix.
     plans: [],
+    productType: "prime",
     optionGroups: [
       {
         id: "duration",
-        label: "Duration",
-        multiplies: true,
+        label: "Select Duration",
+        priced: true,
         choices: [
-          { id: "1m", label: "1 Month", count: 1 },
-          { id: "3m", label: "3 Months", count: 3 },
-          { id: "6m", label: "6 Months", count: 6 },
-          { id: "12m", label: "12 Months", count: 12 },
+          { id: "1m", label: "1 Month" },
+          { id: "3m", label: "3 Months" },
+          { id: "6m", label: "6 Months" },
+          { id: "12m", label: "12 Months" },
         ],
       },
       {
         id: "screens",
-        label: "Number of screens",
+        label: "Select Screen",
         priced: true,
         choices: [
-          { id: "s1", label: "1 Screen", count: 1 },
-          { id: "s2", label: "2 Screens", count: 2 },
-          { id: "s3", label: "3 Screens", count: 3 },
-          { id: "s5", label: "5 Screens — Full Account", count: 5 },
+          { id: "s1", label: "1 Screen" },
+          { id: "s2", label: "2 Screens" },
+          { id: "s3", label: "3 Screens" },
+          { id: "full", label: "Full Account" },
+        ],
+      },
+      {
+        id: "device",
+        label: "Select Devices",
+        kind: "multi",
+        hideWhen: { groupId: "screens", choiceIds: ["full"] },
+        // One allocation per screen: a 2-screen package takes two devices.
+        quantityFrom: {
+          groupId: "screens",
+          perChoice: { s1: 1, s2: 2, s3: 3, full: 0 },
+        },
+        choices: [
+          { id: "ml", label: "Mobile / Laptop" },
+          { id: "tv", label: "TV" },
         ],
       },
     ],
     prices: [
-      { values: { screens: "s1" }, price: 199 },
-      { values: { screens: "s2" }, price: 349 },
-      { values: { screens: "s3" }, price: 499 },
-      { values: { screens: "s5" }, price: 749 },
+      { values: { duration: "1m", screens: "s1" }, price: 199 },
+      { values: { duration: "1m", screens: "s2" }, price: 349 },
+      { values: { duration: "1m", screens: "s3" }, price: 499 },
+      { values: { duration: "1m", screens: "full" }, price: 749 },
+      { values: { duration: "3m", screens: "s1" }, price: 549 },
+      { values: { duration: "3m", screens: "s2" }, price: 999 },
+      { values: { duration: "3m", screens: "s3" }, price: 1399 },
+      { values: { duration: "3m", screens: "full" }, price: 2099 },
+      { values: { duration: "6m", screens: "s1" }, price: 999 },
+      { values: { duration: "6m", screens: "s2" }, price: 1849 },
+      { values: { duration: "6m", screens: "s3" }, price: 2599 },
+      { values: { duration: "6m", screens: "full" }, price: 3899 },
+      { values: { duration: "12m", screens: "s1" }, price: 1799 },
+      { values: { duration: "12m", screens: "s2" }, price: 3299 },
+      { values: { duration: "12m", screens: "s3" }, price: 4599 },
+      { values: { duration: "12m", screens: "full" }, price: 6999 },
     ],
   },
   {

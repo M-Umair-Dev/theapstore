@@ -3,11 +3,14 @@
 import type { OptionChoice, OptionGroup, PriceRule } from "@/lib/products";
 
 /**
- * Editor for the duration × screens × devices matrix.
+ * Editor for the generic option matrix.
  *
  * Group and choice ids are generated here and never shown — they are what the
  * price rules key on, so deriving them from labels would break prices every
  * time an admin reworded something.
+ *
+ * Netflix and Amazon Prime products use the dedicated NetflixEditor instead;
+ * both write the same structure.
  */
 
 type Props = {
@@ -17,7 +20,8 @@ type Props = {
 };
 
 let seq = 0;
-const newId = (prefix: string) => `${prefix}${(seq++).toString(36)}${Date.now().toString(36).slice(-3)}`;
+const newId = (prefix: string) =>
+  `${prefix}${(seq++).toString(36)}${Date.now().toString(36).slice(-3)}`;
 
 const newGroup = (): OptionGroup => ({
   id: newId("g"),
@@ -28,19 +32,6 @@ const newGroup = (): OptionGroup => ({
 });
 
 const newChoice = (): OptionChoice => ({ id: newId("c"), label: "" });
-
-/** Every priced combination, in display order. */
-function matrixRows(groups: OptionGroup[]) {
-  const priced = groups.filter((g) => g.priced);
-  let rows: Record<string, string>[] = [{}];
-
-  for (const g of priced) {
-    rows = rows.flatMap((row) =>
-      g.choices.map((c) => ({ ...row, [g.id]: c.id })),
-    );
-  }
-  return { priced, rows };
-}
 
 export default function OptionsEditor({ groups, prices, onChange }: Props) {
   const emit = (nextGroups: OptionGroup[], nextPrices = prices) =>
@@ -83,14 +74,12 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
       ),
     );
 
-  const removeGroup = (id: string) =>
-    emit(groups.filter((g) => g.id !== id));
+  const removeGroup = (id: string) => emit(groups.filter((g) => g.id !== id));
 
   const setPrice = (values: Record<string, string>, raw: string) => {
     const trimmed = raw.trim();
     const rest = prices.filter(
-      (rule) =>
-        !Object.entries(values).every(([k, v]) => rule.values[k] === v),
+      (rule) => !Object.entries(values).every(([k, v]) => rule.values[k] === v),
     );
     if (!trimmed) {
       emit(groups, rest);
@@ -99,80 +88,107 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
     emit(groups, [...rest, { values, price: Number(trimmed) || 0 }]);
   };
 
-  const { priced, rows } = matrixRows(groups);
+  const priced = groups.filter((g) => g.priced);
+  let rows: Record<string, string>[] = [{}];
+  for (const g of priced) {
+    rows = rows.flatMap((row) =>
+      g.choices.map((c) => ({ ...row, [g.id]: c.id })),
+    );
+  }
 
   return (
     <>
       <div className="admin-panel">
         <h2>Option groups</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
-          Shown to the customer in this order. A group does one of three jobs:
+          Shown to the customer in this order.
           <br />
-          <strong>Sets the price</strong> — forms the price grid (screens).
+          <strong>Sets the price</strong> — this group forms the price grid.
           <br />
-          <strong>Multiplies the price</strong> — charges the grid price once per
-          unit, using each choice&apos;s number (duration: 3 months = 3 ×).
-          <br />
-          <strong>Neither</strong> — a qualifier that does not affect price
-          (device).
+          <strong>Neither</strong> — a qualifier that does not affect the price.
         </p>
 
         <div className="repeat-list">
-          {groups.map((g, index) => (
-            <div className="repeat-item" key={g.id}>
-              <div className="repeat-head">
-                <span>Group {index + 1}</span>
-                {groups.length > 1 && (
-                  <button
-                    type="button"
-                    className="link-btn"
-                    onClick={() => removeGroup(g.id)}
-                  >
-                    Remove group
-                  </button>
-                )}
-              </div>
+          {groups.map((g, index) => {
+            const hideSource = groups.find((x) => x.id === g.hideWhen?.groupId);
 
-              <div className="form-row form-row-3">
-                <div className="field">
-                  <label className="label">Heading</label>
-                  <input
-                    className="input"
-                    value={g.label}
-                    onChange={(e) => patchGroup(g.id, { label: e.target.value })}
-                    placeholder="Duration"
-                  />
+            return (
+              <div className="repeat-item" key={g.id}>
+                <div className="repeat-head">
+                  <span>Group {index + 1}</span>
+                  {groups.length > 1 && (
+                    <button
+                      type="button"
+                      className="link-btn"
+                      onClick={() => removeGroup(g.id)}
+                    >
+                      Remove group
+                    </button>
+                  )}
                 </div>
 
-                <div className="field">
-                  <label className="label">Type</label>
-                  <select
-                    className="select"
-                    value={g.kind ?? "select"}
-                    onChange={(e) =>
-                      patchGroup(g.id, {
-                        kind: e.target.value as OptionGroup["kind"],
-                      })
-                    }
-                  >
-                    <option value="select">Pick one</option>
-                    <option value="slots">Pick a device per slot</option>
-                  </select>
-                </div>
-
-                {g.kind === "slots" && (
+                <div className="form-row form-row-3">
                   <div className="field">
-                    <label className="label">Slots come from</label>
+                    <label className="label">Heading</label>
+                    <input
+                      className="input"
+                      value={g.label}
+                      onChange={(e) =>
+                        patchGroup(g.id, { label: e.target.value })
+                      }
+                      placeholder="Duration"
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label className="label">Type</label>
                     <select
                       className="select"
-                      value={g.slotsFrom ?? ""}
+                      value={g.kind ?? "select"}
                       onChange={(e) =>
-                        patchGroup(g.id, { slotsFrom: e.target.value })
+                        patchGroup(g.id, {
+                          kind: e.target.value as OptionGroup["kind"],
+                        })
                       }
                     >
-                      <option value="">Choose a group</option>
+                      <option value="select">Pick one</option>
+                      <option value="multi">Pick any number</option>
+                    </select>
+                  </div>
+
+                  <div className="field">
+                    <span className="label">Pricing</span>
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(g.priced)}
+                        onChange={(e) =>
+                          patchGroup(g.id, { priced: e.target.checked })
+                        }
+                      />
+                      Sets the price
+                    </label>
+                  </div>
+
+                  <div className="field">
+                    <label className="label">Hide this group when</label>
+                    <select
+                      className="select"
+                      value={g.hideWhen?.groupId ?? ""}
+                      onChange={(e) =>
+                        patchGroup(g.id, {
+                          hideWhen: e.target.value
+                            ? {
+                                groupId: e.target.value,
+                                choiceIds: g.hideWhen?.choiceIds ?? [],
+                              }
+                            : undefined,
+                        })
+                      }
+                    >
+                      <option value="">Never</option>
                       {groups
-                        .filter((x) => x.id !== g.id && x.kind !== "slots")
+                        .filter((x) => x.id !== g.id && x.kind !== "multi")
                         .map((x) => (
                           <option key={x.id} value={x.id}>
                             {x.label || "(unnamed group)"}
@@ -180,104 +196,102 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                         ))}
                     </select>
                   </div>
+                </div>
+
+                {hideSource && (
+                  <div className="field" style={{ marginTop: "var(--space-4)" }}>
+                    <span className="label">
+                      …one of these is selected
+                    </span>
+                    <div style={{ display: "grid", gap: "var(--space-2)" }}>
+                      {hideSource.choices.map((c) => {
+                        const picked =
+                          g.hideWhen?.choiceIds.includes(c.id) ?? false;
+                        return (
+                          <label className="check" key={c.id}>
+                            <input
+                              type="checkbox"
+                              checked={picked}
+                              onChange={() =>
+                                patchGroup(g.id, {
+                                  hideWhen: {
+                                    groupId: hideSource.id,
+                                    choiceIds: picked
+                                      ? (g.hideWhen?.choiceIds ?? []).filter(
+                                          (id) => id !== c.id,
+                                        )
+                                      : [
+                                          ...(g.hideWhen?.choiceIds ?? []),
+                                          c.id,
+                                        ],
+                                  },
+                                })
+                              }
+                            />
+                            {c.label || "(unnamed choice)"}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
 
-                <div className="field">
-                  <span className="label">Pricing</span>
-                  <div style={{ display: "grid", gap: "var(--space-2)" }}>
-                    <label className="check">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(g.priced)}
-                        onChange={(e) =>
-                          patchGroup(g.id, {
-                            priced: e.target.checked,
-                            // the two roles are exclusive
-                            ...(e.target.checked ? { multiplies: false } : {}),
-                          })
-                        }
-                      />
-                      Sets the price
-                    </label>
-                    <label className="check">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(g.multiplies)}
-                        onChange={(e) =>
-                          patchGroup(g.id, {
-                            multiplies: e.target.checked,
-                            ...(e.target.checked ? { priced: false } : {}),
-                          })
-                        }
-                      />
-                      Multiplies the price
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="repeat-list" style={{ marginTop: "var(--space-4)" }}>
-                {g.choices.map((c, ci) => (
-                  <div className="form-row" key={c.id}>
-                    <div className="field">
-                      <label className="label">Choice {ci + 1}</label>
-                      <input
-                        className="input"
-                        value={c.label}
-                        onChange={(e) =>
-                          patchChoice(g.id, c.id, { label: e.target.value })
-                        }
-                        placeholder="1 Month"
-                      />
-                    </div>
-                    <div className="field">
-                      <label className="label">
-                        {g.multiplies
-                          ? "Months this choice covers"
-                          : g.kind === "slots"
-                            ? "Devices granted per choice"
-                            : "Devices granted (optional)"}
-                      </label>
-                      <div style={{ display: "flex", gap: "var(--space-3)" }}>
+                <div
+                  className="repeat-list"
+                  style={{ marginTop: "var(--space-4)" }}
+                >
+                  {g.choices.map((c, ci) => (
+                    <div className="form-row" key={c.id}>
+                      <div className="field">
+                        <label className="label">Choice {ci + 1}</label>
                         <input
                           className="input"
-                          type="number"
-                          min="0"
-                          value={c.count ?? ""}
+                          value={c.label}
                           onChange={(e) =>
-                            patchChoice(g.id, c.id, {
-                              count: e.target.value
-                                ? Number(e.target.value)
-                                : undefined,
-                            })
+                            patchChoice(g.id, c.id, { label: e.target.value })
                           }
-                          placeholder="1"
+                          placeholder="1 Month"
                         />
-                        {g.choices.length > 1 && (
-                          <button
-                            type="button"
-                            className="link-btn"
-                            onClick={() => removeChoice(g.id, c.id)}
-                          >
-                            Remove
-                          </button>
-                        )}
+                      </div>
+                      <div className="field">
+                        <label className="label">Note (optional)</label>
+                        <div style={{ display: "flex", gap: "var(--space-3)" }}>
+                          <input
+                            className="input"
+                            value={c.note ?? ""}
+                            onChange={(e) =>
+                              patchChoice(g.id, c.id, {
+                                note: e.target.value || undefined,
+                              })
+                            }
+                            placeholder="Shown under the label"
+                          />
+                          {g.choices.length > 1 && (
+                            <button
+                              type="button"
+                              className="link-btn"
+                              onClick={() => removeChoice(g.id, c.id)}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <button
-                type="button"
-                className="link-btn"
-                style={{ marginTop: "var(--space-4)" }}
-                onClick={() => addChoice(g.id)}
-              >
-                Add choice
-              </button>
-            </div>
-          ))}
+                <button
+                  type="button"
+                  className="link-btn"
+                  style={{ marginTop: "var(--space-4)" }}
+                  onClick={() => addChoice(g.id)}
+                >
+                  Add choice
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         <button
@@ -294,10 +308,9 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
         <div className="admin-panel">
           <h2>Prices</h2>
           <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
-            One price per combination of the price-setting groups. Everything
-            else — duration, device — stays out of this grid because it does not
-            change the base price. A duration multiplies the price below by the
-            months chosen.
+            One price for every combination of the price-setting groups.
+            Qualifier groups never appear here because they do not change the
+            price.
           </p>
 
           <div className="table-wrap">
