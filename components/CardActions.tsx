@@ -32,7 +32,9 @@ export default function CardActions({
 
   const whatsapp = waLink(
     chooseHref
-      ? `Hello, I want to buy ${line.title}`
+      ? `Hello, THe AP Store
+        I am Intrested to buy ${line.title} subscription
+        Kindly Share details`
       : cartMessage([{ ...line, qty: 1 }], line.price),
   );
 
