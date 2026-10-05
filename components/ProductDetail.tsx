@@ -14,6 +14,8 @@ import {
   isHidden,
   lineFor,
   priceFor,
+  priceForChoice,
+  pricedGroups,
   requiredQuantity,
   totalCount,
   visibleGroups,
@@ -61,6 +63,10 @@ export default function ProductDetail({
   const complete = !advanced || isComplete(product, selection);
   const split = advanced ? describeSelection(product, selection) : null;
   const shown = advanced ? visibleGroups(product, selection) : [];
+
+  // Prices ride on the last priced group only — the screen step. Earlier steps
+  // (duration) stay text-only, and the figure below the buttons carries it.
+  const priceGroupId = pricedGroups(product).at(-1)?.id;
 
   const line = advanced
     ? lineFor(product, selection)
@@ -265,12 +271,22 @@ export default function ProductDetail({
                   )
                 ) : (
                   <div
-                    className="plan-list"
+                    className="plan-list plan-list-compact"
                     role="radiogroup"
                     aria-label={g.label}
                   >
                     {g.choices.map((c) => {
                       const selected = selection[g.id]?.[0] === c.id;
+                      // A priced group shows the admin's figure for this choice
+                      // once the other priced groups are answered. Duration is
+                      // usually the driver, so the screen prices move with it.
+                      const priceTag =
+                        g.id === priceGroupId &&
+                        pricedGroups(product).every(
+                          (x) => x.id === g.id || Boolean(selection[x.id]?.[0]),
+                        )
+                          ? priceForChoice(product, selection, g.id, c.id)
+                          : undefined;
 
                       return (
                         <button
@@ -288,6 +304,11 @@ export default function ProductDetail({
                               <span className="plan-meta">{c.note}</span>
                             )}
                           </span>
+                          {priceTag !== undefined && (
+                            <span className="plan-price">
+                              {formatPrice(priceTag)}
+                            </span>
+                          )}
                         </button>
                       );
                     })}

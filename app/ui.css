@@ -453,16 +453,32 @@
 /* ---------- Product card ---------- */
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  cursor: pointer;
   transition:
     transform var(--transition),
     box-shadow var(--transition),
     border-color var(--transition);
+}
+
+/* Stretched link: clicking anywhere on the card opens the product page. The
+   action row sits above it, so its own buttons still win the click. It stays
+   hidden from assistive tech because the title link already leads there. */
+.card-open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card-actions {
+  position: relative;
+  z-index: 2;
 }
 
 .card:hover {
@@ -905,6 +921,28 @@
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-4);
+}
+
+/* Option-matrix products (Netflix / Prime) list the same cards as a compact
+   grid, so the duration and screen steps stay short. Only container sizes
+   change — every font size still comes from the rules below. */
+.plan-list-compact {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+.plan-list-compact .plan {
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.plan-list-compact .plan-radio {
+  width: 16px;
+  height: 16px;
+}
+
+.plan-list-compact .plan-price {
+  white-space: nowrap;
 }
 
 .plan {

@@ -134,6 +134,20 @@ export function priceFor(p: Product, selection: Selection) {
   return findPrice(p, selection)?.price ?? 0;
 }
 
+/**
+ * The admin's price for one choice in a priced group, with the rest of the
+ * selection left as it is. Read straight from the price matrix — nothing is
+ * multiplied or derived from another duration.
+ */
+export function priceForChoice(
+  p: Product,
+  selection: Selection,
+  groupId: string,
+  choiceId: string,
+) {
+  return findPrice(p, { ...selection, [groupId]: [choiceId] })?.price;
+}
+
 /** Lowest price the product can be bought for. Works for both product shapes. */
 export function startingPrice(p: Product) {
   if (!hasOptions(p)) {
