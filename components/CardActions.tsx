@@ -4,18 +4,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart, type NewLine } from "@/lib/cart";
-import { cartMessage, waLink } from "@/lib/whatsapp";
+import { waLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 /**
  * Buy Now is the primary action and hands the customer straight to WhatsApp
- * with the product, plan and price already written out. Add to cart stays
- * beside it for people who want to combine several items on the site.
+ * naming the product, so the conversation starts with something to answer.
+ * Add to cart stays beside it for people who want to combine several items.
  *
  * `chooseHref` is set on products sold through the option matrix: their price
  * depends on choices the card cannot make, so both site buttons are replaced
- * by one link to the selectors, and the WhatsApp message names the product
- * only — no price, because no combination has been chosen yet.
+ * by one link to the selectors.
  */
 export default function CardActions({
   line,
@@ -30,12 +29,10 @@ export default function CardActions({
   const router = useRouter();
   const [added, setAdded] = useState(false);
 
+  // Card-only message, the same for every product. The cart and checkout build
+  // their own lines through cartMessage, so they are untouched by this.
   const whatsapp = waLink(
-    chooseHref
-      ? `Hello, THe AP Store
-        I am Intrested to buy ${line.title} subscription
-        Kindly Share details`
-      : cartMessage([{ ...line, qty: 1 }], line.price),
+    `Hello, The AP Store.\n\nI am interested to buy, ${line.title} subscription!\n\nplz Give me details.`,
   );
 
   if (disabled) {
