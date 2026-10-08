@@ -73,8 +73,13 @@ export default async function ShopPage({
 
         <div>
           <div className="shop-search">
-            {/* Re-mounted when the term changes so "Clear search" empties it. */}
-            <SearchBox key={q ?? ""} initial={q ?? ""} />
+            {/* `live` re-runs the search as the customer types, keeping the
+                other filters, sorting and pagination in the URL. */}
+            <SearchBox
+              initial={q ?? ""}
+              live
+              base={{ category, band: sp.band, sort }}
+            />
           </div>
 
           <div className="sort-bar">

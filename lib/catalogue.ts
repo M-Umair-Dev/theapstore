@@ -3,6 +3,9 @@ import type { Product } from "./products";
 
 export const PAGE_SIZE = 9;
 
+/** How many products the header search dropdown offers. */
+export const searchLimit = 6;
+
 export const sorts = {
   featured: "Featured",
   newest: "Newest",
@@ -22,6 +25,11 @@ const priceBands = [
 ];
 
 export { priceBands };
+
+/** The one definition of "this product matches the search box". Case
+ *  insensitive, matches any part of the name. */
+export const matchesQuery = (p: Product, term: string) =>
+  p.title.toLowerCase().includes(term);
 
 /** Pure: takes the catalogue in, returns the page to render. */
 export function filterProducts(
@@ -44,7 +52,7 @@ export function filterProducts(
   let list = [...all];
 
   const term = q?.trim().toLowerCase();
-  if (term) list = list.filter((p) => p.title.toLowerCase().includes(term));
+  if (term) list = list.filter((p) => matchesQuery(p, term));
 
   if (category) list = list.filter((p) => p.category === category);
 

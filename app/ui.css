@@ -233,10 +233,14 @@
 /* ---------- Product search ---------- */
 
 .search-box {
+  position: relative;
+  max-width: 240px;
+}
+
+.search-form {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  max-width: 240px;
   padding: 2px 2px 2px var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -244,7 +248,7 @@
   transition: border-color var(--transition);
 }
 
-.search-box:focus-within {
+.search-box:focus-within .search-form {
   border-color: var(--primary);
 }
 
@@ -292,6 +296,104 @@
 
 .shop-search .search-box {
   max-width: none;
+}
+
+/* ---------- Header search suggestions ---------- */
+
+.search-drop {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  width: min(340px, calc(100vw - var(--space-8)));
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+}
+
+.search-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-hit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  transition: background var(--transition);
+}
+
+.search-hit:hover,
+.search-hit:focus-visible {
+  background: var(--surface);
+}
+
+.search-thumb {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  object-fit: cover;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--border);
+}
+
+.search-hit-text {
+  display: grid;
+  min-width: 0;
+}
+
+.search-hit-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-hit-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.search-empty {
+  margin: 0;
+  padding: var(--space-4) var(--space-3);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.search-all {
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.search-all:hover {
+  color: var(--primary-dark);
 }
 
 .cart-link {
@@ -1756,6 +1858,16 @@
   .search-box {
     max-width: none;
     flex: 1;
+  }
+
+  /* Pinned under the full header width, so a narrow screen cannot push the
+     suggestions off either edge. */
+  .search-drop {
+    position: fixed;
+    top: calc(var(--header-height) + var(--space-2));
+    left: var(--space-4);
+    right: var(--space-4);
+    width: auto;
   }
 
   .header-actions {
