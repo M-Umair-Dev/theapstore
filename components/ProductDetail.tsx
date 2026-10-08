@@ -436,6 +436,12 @@ export default function ProductDetail({
           >
             Order on site
           </button>
+
+          {/* Navigating away leaves the cart alone — it lives in CartProvider,
+              so the lines, quantities and chosen variations are still there. */}
+          <Link href="/shop" className="btn btn-ghost btn-block">
+            Continue shopping
+          </Link>
         </div>
 
         <p className={`helper-text${pending ? " is-warning" : ""}`} role={pending ? "status" : undefined}>

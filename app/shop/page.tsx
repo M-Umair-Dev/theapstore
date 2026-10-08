@@ -3,6 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import FilterPanel from "@/components/FilterPanel";
 import ProductCard from "@/components/ProductCard";
+import SearchBox from "@/components/SearchBox";
 import SortSelect from "@/components/SortSelect";
 import { filterProducts, isSort, shopHref } from "@/lib/catalogue";
 import { getCategory, getCategoryName } from "@/lib/products";
@@ -15,6 +16,7 @@ type Params = {
   band?: string;
   sort?: string;
   page?: string;
+  q?: string;
 };
 
 export const metadata: Metadata = {
@@ -34,12 +36,14 @@ export default async function ShopPage({
   const category = getCategory(sp.category ?? "") ? sp.category : undefined;
   const sort = isSort(sp.sort) ? sp.sort : "featured";
   const parsedPage = Number(sp.page ?? 1);
+  const q = sp.q?.trim() || undefined;
 
   const { items, total, pages, page } = filterProducts(all, {
     category,
     band: sp.band,
     sort,
     page: Number.isFinite(parsedPage) ? parsedPage : 1,
+    q,
   });
 
   return (
@@ -64,25 +68,35 @@ export default async function ShopPage({
           category={category}
           band={sp.band}
           sort={sort}
+          q={q}
         />
 
         <div>
+          <div className="shop-search">
+            {/* Re-mounted when the term changes so "Clear search" empties it. */}
+            <SearchBox key={q ?? ""} initial={q ?? ""} />
+          </div>
+
           <div className="sort-bar">
             <span className="result-count">
               {total} {total === 1 ? "result" : "results"}
+              {q && ` for “${q}”`}
             </span>
-            <SortSelect sort={sort} category={category} band={sp.band} />
+            <SortSelect sort={sort} category={category} band={sp.band} q={q} />
           </div>
 
           {items.length === 0 ? (
             <div className="empty-state">
-              <h2>No products match these filters</h2>
+              <h2>
+                {q ? "No products found" : "No products match these filters"}
+              </h2>
               <p>
-                Try a different category or price range — the full catalogue is
-                one click away.
+                {q
+                  ? "Try another search, or clear it to see the full catalogue."
+                  : "Try a different category or price range — the full catalogue is one click away."}
               </p>
               <Link href="/shop" className="btn btn-primary">
-                Clear filters
+                {q ? "Clear search" : "Clear filters"}
               </Link>
             </div>
           ) : (
@@ -98,7 +112,13 @@ export default async function ShopPage({
               {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
                 <Link
                   key={n}
-                  href={shopHref({ category, band: sp.band, sort, page: n })}
+                  href={shopHref({
+                    category,
+                    band: sp.band,
+                    sort,
+                    page: n,
+                    q,
+                  })}
                   className={`page-link${n === page ? " is-active" : ""}`}
                   aria-current={n === page ? "page" : undefined}
                 >

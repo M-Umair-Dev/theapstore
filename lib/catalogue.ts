@@ -31,9 +31,20 @@ export function filterProducts(
     band,
     sort = "featured",
     page = 1,
-  }: { category?: string; band?: string; sort?: string; page?: number },
+    q,
+  }: {
+    category?: string;
+    band?: string;
+    sort?: string;
+    page?: number;
+    /** Free-text product name search. Case-insensitive, matches part names. */
+    q?: string;
+  },
 ) {
   let list = [...all];
+
+  const term = q?.trim().toLowerCase();
+  if (term) list = list.filter((p) => p.title.toLowerCase().includes(term));
 
   if (category) list = list.filter((p) => p.category === category);
 
@@ -71,12 +82,14 @@ export function shopHref(params: {
   band?: string;
   sort?: string;
   page?: number;
+  q?: string;
 }) {
-  const q = new URLSearchParams();
-  if (params.category) q.set("category", params.category);
-  if (params.band) q.set("band", params.band);
-  if (params.sort && params.sort !== "featured") q.set("sort", params.sort);
-  if (params.page && params.page > 1) q.set("page", String(params.page));
-  const qs = q.toString();
+  const search = new URLSearchParams();
+  if (params.q) search.set("q", params.q);
+  if (params.category) search.set("category", params.category);
+  if (params.band) search.set("band", params.band);
+  if (params.sort && params.sort !== "featured") search.set("sort", params.sort);
+  if (params.page && params.page > 1) search.set("page", String(params.page));
+  const qs = search.toString();
   return qs ? `/shop?${qs}` : "/shop";
 }

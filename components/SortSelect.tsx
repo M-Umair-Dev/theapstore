@@ -7,10 +7,13 @@ export default function SortSelect({
   sort,
   category,
   band,
+  q,
 }: {
   sort: Sort;
   category?: string;
   band?: string;
+  /** Active search term, carried so sorting never drops it. */
+  q?: string;
 }) {
   const router = useRouter();
 
@@ -22,7 +25,7 @@ export default function SortSelect({
         value={sort}
         onChange={(e) =>
           router.push(
-            shopHref({ category, band, sort: e.target.value as Sort }),
+            shopHref({ category, band, sort: e.target.value as Sort, q }),
           )
         }
       >

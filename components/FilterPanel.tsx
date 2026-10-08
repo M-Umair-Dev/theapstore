@@ -9,18 +9,21 @@ export default function FilterPanel({
   category,
   band,
   sort,
+  q,
 }: {
   products: Product[];
   category?: string;
   band?: string;
   sort?: string;
+  /** Active search term, carried so filtering never drops it. */
+  q?: string;
 }) {
   return (
     <aside className="filters" aria-label="Filters and categories">
       <div className="filter-group">
         <h3>Categories</h3>
         <Link
-          href={shopHref({ band, sort })}
+          href={shopHref({ band, sort, q })}
           className={`filter-link${!category ? " is-active" : ""}`}
         >
           All products
@@ -29,7 +32,7 @@ export default function FilterPanel({
         {categories.map((c) => (
           <Link
             key={c.slug}
-            href={shopHref({ category: c.slug, band, sort })}
+            href={shopHref({ category: c.slug, band, sort, q })}
             className={`filter-link${category === c.slug ? " is-active" : ""}`}
           >
             {c.name}
@@ -49,6 +52,7 @@ export default function FilterPanel({
               category,
               band: band === b.slug ? undefined : b.slug,
               sort,
+              q,
             })}
             className={`filter-link${band === b.slug ? " is-active" : ""}`}
           >

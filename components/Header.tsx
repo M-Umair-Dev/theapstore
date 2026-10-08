@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
+import SearchBox from "@/components/SearchBox";
 import { site } from "@/lib/site";
 
 export default function Header() {
@@ -45,6 +46,7 @@ export default function Header() {
           </nav>
 
           <div className="header-actions">
+            <SearchBox />
             <Link href="/shop" className="btn btn-primary btn-sm">
               Shop Now
             </Link>
