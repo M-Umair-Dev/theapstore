@@ -12,9 +12,10 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
  * naming the product, so the conversation starts with something to answer.
  * Add to cart stays beside it for people who want to combine several items.
  *
- * `chooseHref` is set on products sold through the option matrix: their price
- * depends on choices the card cannot make, so both site buttons are replaced
- * by one link to the selectors.
+ * `chooseHref` is set on any product the customer has to choose something for
+ * — an option matrix or several plans. Both site buttons are then replaced by
+ * one link to the selectors, so a price the customer never picked can never
+ * reach the cart.
  */
 export default function CardActions({
   line,

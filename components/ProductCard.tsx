@@ -1,16 +1,17 @@
 import Link from "next/link";
 import CardActions from "@/components/CardActions";
-import { defaultLine, hasOptions, startingPrice } from "@/lib/options";
+import { defaultLine, needsChoice, startingPrice } from "@/lib/options";
 import { formatPrice, getCategoryName, type Product } from "@/lib/products";
 
 export default function ProductCard({ product }: { product: Product }) {
   const from = startingPrice(product);
   const ranged = (product.prices?.length ?? product.plans.length) > 1;
 
-  // Products sold through the option matrix cannot be added from the card —
-  // the customer has to pick a duration, screen and devices first, so the
-  // card sends them to the selectors instead of guessing a combination.
-  const chooseHref = hasOptions(product)
+  // Anything the customer has to choose — an option matrix, or one of several
+  // plans — cannot be bought from the card, because the card would be picking
+  // for them and adding a price they never saw. They go to the selectors.
+  // Single-plan and single-price products keep the direct buttons.
+  const chooseHref = needsChoice(product)
     ? `/product/${product.slug}#plans`
     : undefined;
 

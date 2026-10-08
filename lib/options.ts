@@ -13,6 +13,14 @@ import type {
 export const hasOptions = (p: Product) =>
   Boolean(p.optionGroups?.length && p.prices?.length);
 
+/**
+ * True when the customer has to choose something before the product can be
+ * bought — either the option matrix, or a pick between several plans. Only a
+ * product with exactly one plan has nothing to choose, so only that can be
+ * added straight from a card.
+ */
+export const needsChoice = (p: Product) => hasOptions(p) || p.plans.length !== 1;
+
 export const pricedGroups = (p: Product): OptionGroup[] =>
   (p.optionGroups ?? []).filter((g) => g.priced);
 
