@@ -1,5 +1,10 @@
+import ConfirmSubmit from "@/components/ConfirmSubmit";
+import {
+  deleteCustomerAction,
+  deleteStaffAction,
+} from "@/app/admin/actions";
 import { formatPrice } from "@/lib/products";
-import { listOrders, listUsers } from "@/lib/repo";
+import { DELETED_CUSTOMER, listOrders, listUsers } from "@/lib/repo";
 
 export const dynamic = "force-dynamic";
 
@@ -12,13 +17,27 @@ type Customer = {
   last: Date;
 };
 
-export default async function AdminCustomers() {
-  const [orders, users] = await Promise.all([listOrders(), listUsers()]);
+type Params = { deleted?: string; error?: string };
 
-  // Customers are derived from orders — there are no customer accounts.
+export default async function AdminCustomers({
+  searchParams,
+}: {
+  searchParams: Promise<Params>;
+}) {
+  const [sp, orders, users] = await Promise.all([
+    searchParams,
+    listOrders(),
+    listUsers(),
+  ]);
+
+  // Customers are derived from orders — there are no customer accounts. Orders
+  // whose customer was erased keep the placeholder address, which is not a
+  // person and is left out of the list.
   const byEmail = new Map<string, Customer>();
   for (const order of orders) {
     const email = order.customer.email;
+    if (!email || email === DELETED_CUSTOMER.email) continue;
+
     const existing = byEmail.get(email);
     const counted = order.status === "verified" || order.status === "delivered";
 
@@ -52,8 +71,25 @@ export default async function AdminCustomers() {
         </div>
       </div>
 
+      {sp.deleted && (
+        <p className="form-success" style={{ marginBottom: "var(--space-5)" }}>
+          Removed <strong>{sp.deleted}</strong>.
+        </p>
+      )}
+      {sp.error && (
+        <p className="form-error" role="alert" style={{ marginBottom: "var(--space-5)" }}>
+          {sp.error}
+        </p>
+      )}
+
       <div className="admin-panel">
         <h2>Buyers</h2>
+        <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
+          Customers have no accounts of their own — each one exists as the
+          details on their orders. Removing a customer erases those details and
+          leaves the order, its items and its total intact for your records.
+        </p>
+
         {customers.length === 0 ? (
           <p className="hint">
             No orders yet, so there is nobody to list. Customers appear here as
@@ -70,6 +106,7 @@ export default async function AdminCustomers() {
                   <th>Orders</th>
                   <th>Spent</th>
                   <th>Last order</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -94,6 +131,21 @@ export default async function AdminCustomers() {
                         year: "numeric",
                       })}
                     </td>
+                    <td className="table-actions">
+                      <form action={deleteCustomerAction}>
+                        <input type="hidden" name="email" value={c.email} />
+                        <input
+                          type="hidden"
+                          name="back"
+                          value="/admin/customers"
+                        />
+                        <ConfirmSubmit
+                          label="Delete"
+                          pendingLabel="Removing…"
+                          message={`Delete customer ${c.name}?\n\nThis erases ${c.name}'s name, email and phone from all ${c.orders} of their orders.\n\nThe orders themselves, their items, totals and payment screenshots are kept for your records, and they stop being traceable to this customer. Order tracking with this email will no longer work.\n\nThis action cannot be undone.`}
+                        />
+                      </form>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -116,6 +168,7 @@ export default async function AdminCustomers() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -125,6 +178,20 @@ export default async function AdminCustomers() {
                   <td className="muted">{u.email}</td>
                   <td>
                     <span className="pill pill-primary">{u.role}</span>
+                  </td>
+                  <td className="table-actions">
+                    <form action={deleteStaffAction}>
+                      <input type="hidden" name="email" value={u.email} />
+                      <input
+                        type="hidden"
+                        name="back"
+                        value="/admin/customers"
+                      />
+                      <ConfirmSubmit
+                        label="Delete"
+                        message={`Delete the sign-in account for ${u.name} (${u.email})?\n\nThey lose access to this admin panel immediately.\n\nThis action cannot be undone.`}
+                      />
+                    </form>
                   </td>
                 </tr>
               ))}

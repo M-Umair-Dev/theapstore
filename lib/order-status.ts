@@ -14,3 +14,25 @@ export const orderStatuses: OrderStatus[] = [
 
 /** Only these count toward revenue. */
 export const earningStatuses: OrderStatus[] = ["verified", "delivered"];
+
+/* ---------------- delivery ---------------- */
+
+/**
+ * How the customer asked to receive their account details. Chosen at checkout,
+ * separate from payment status and from order status.
+ */
+export type DeliveryMethod = "whatsapp" | "email";
+
+export const deliveryMethods: DeliveryMethod[] = ["whatsapp", "email"];
+
+export const deliveryLabels: Record<DeliveryMethod, string> = {
+  whatsapp: "WhatsApp",
+  email: "Email",
+};
+
+export const isDeliveryMethod = (v: unknown): v is DeliveryMethod =>
+  v === "whatsapp" || v === "email";
+
+/** Orders placed before this choice existed carry no method. */
+export const deliveryLabel = (v: DeliveryMethod | undefined) =>
+  v ? deliveryLabels[v] : "Not specified";

@@ -18,6 +18,8 @@ export default async function AdminDashboard() {
     { label: "Revenue (verified)", value: formatPrice(stats.revenue), accent: true },
     { label: "Orders", value: String(stats.orders) },
     { label: "Pending", value: String(stats.pending) },
+    { label: "Completed", value: String(stats.delivered) },
+    { label: "Customers", value: String(stats.customers) },
     { label: "Products", value: String(stats.products) },
   ];
 

@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCart } from "@/lib/cart";
+import { useEffect, useState } from "react";
+import { useCart, readDelivery, writeDelivery } from "@/lib/cart";
+import {
+  deliveryLabels,
+  deliveryMethods,
+  type DeliveryMethod,
+} from "@/lib/order-status";
 import { formatPrice } from "@/lib/products";
 import { cartMessage, waLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -10,6 +16,11 @@ export default function CartPage() {
   const { lines, ready, setQty, remove } = useCart();
   const total = lines.reduce((sum, l) => sum + l.price * l.qty, 0);
   const whatsapp = waLink(cartMessage(lines, total));
+  const [delivery, setDelivery] = useState<DeliveryMethod | "">("");
+
+  // Read after mount: localStorage does not exist while the page is rendered
+  // on the server, and the first client render must match the HTML.
+  useEffect(() => setDelivery(readDelivery()), []);
 
   return (
     <>
@@ -91,6 +102,47 @@ export default function CartPage() {
                   </div>
                 </div>
               ))}
+
+              {/* Carried to the checkout through localStorage; the order itself
+                  records the choice. */}
+              <fieldset className="delivery-pick">
+                <legend>
+                  How would you like to receive your account details?
+                </legend>
+
+                <div className="delivery-options">
+                  {deliveryMethods.map((method) => (
+                    <label className="delivery-card" key={method}>
+                      <input
+                        type="radio"
+                        name="delivery"
+                        value={method}
+                        checked={delivery === method}
+                        onChange={() => {
+                          setDelivery(method);
+                          writeDelivery(method);
+                        }}
+                      />
+                      <span>
+                        <span className="delivery-name">
+                          {deliveryLabels[method]}
+                        </span>
+                        <span className="delivery-note">
+                          {method === "whatsapp"
+                            ? "Receive your account details and instructions through WhatsApp."
+                            : "Receive your account details and instructions at your email address."}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                <p className="helper-text">
+                  {delivery
+                    ? `We will send your details on ${deliveryLabels[delivery]}. You can change this at checkout.`
+                    : "Pick one so we know where to send your details. You can change it at checkout."}
+                </p>
+              </fieldset>
             </div>
 
             <aside className="summary-card">

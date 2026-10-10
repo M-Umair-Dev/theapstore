@@ -1,10 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { placeOrderAction, type OrderState } from "@/app/order/actions";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { useCart } from "@/lib/cart";
+import { useCart, readDelivery } from "@/lib/cart";
+import {
+  deliveryLabels,
+  deliveryMethods,
+  type DeliveryMethod,
+} from "@/lib/order-status";
 import { formatPrice } from "@/lib/products";
 import { site } from "@/lib/site";
 import { IMAGE_ACCEPT } from "@/lib/uploads";
@@ -16,6 +21,15 @@ export default function OrderPage() {
   const { lines, ready, clear } = useCart();
   const [state, action, pending] = useActionState(placeOrderAction, initial);
   const cleared = useRef(false);
+
+  // Mirrored from the inputs so the delivery section can name the address the
+  // details will actually go to.
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [delivery, setDelivery] = useState<DeliveryMethod | "">("");
+
+  // Read after mount — localStorage is not available during the server render.
+  useEffect(() => setDelivery(readDelivery()), []);
 
   const total = lines.reduce((sum, l) => sum + l.price * l.qty, 0);
   const whatsapp = waLink(cartMessage(lines, total));
@@ -37,7 +51,8 @@ export default function OrderPage() {
           <h2>Order received</h2>
           <p>
             Your reference is <strong>{state.reference}</strong>. We verify your
-            payment and send your access details to the email you gave us. Keep
+            payment and send your access details by{" "}
+            {state.delivery ? deliveryLabels[state.delivery] : "the method you chose"}. Keep
             the reference for any warranty claim.
           </p>
           <div className="hero-actions" style={{ justifyContent: "center" }}>
@@ -142,6 +157,8 @@ export default function OrderPage() {
                   name="email"
                   type="email"
                   className="input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -150,7 +167,14 @@ export default function OrderPage() {
                 <label className="label" htmlFor="phone">
                   Phone / WhatsApp number
                 </label>
-                <input id="phone" name="phone" className="input" required />
+                <input
+                  id="phone"
+                  name="phone"
+                  className="input"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="field">
@@ -163,6 +187,47 @@ export default function OrderPage() {
                   <option>Easypaisa</option>
                   <option>JazzCash</option>
                 </select>
+              </div>
+
+              <div className="field field-full">
+                <fieldset className="delivery-pick">
+                  <legend>
+                    How would you like to receive your account details?
+                  </legend>
+
+                  <div className="delivery-options">
+                    {deliveryMethods.map((method) => (
+                      <label className="delivery-card" key={method}>
+                        <input
+                          type="radio"
+                          name="delivery"
+                          value={method}
+                          checked={delivery === method}
+                          onChange={() => setDelivery(method)}
+                          required
+                        />
+                        <span>
+                          <span className="delivery-name">
+                            {deliveryLabels[method]}
+                          </span>
+                          <span className="delivery-note">
+                            {method === "whatsapp"
+                              ? `We send the details to your WhatsApp number${phone ? ` (${phone})` : ""}.`
+                              : `We send the details to your email address${email ? ` (${email})` : ""}.`}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  <p className="helper-text">
+                    {delivery === "email" && !email
+                      ? "Enter your email address above — that is where the details will go."
+                      : delivery === "whatsapp" && phone.replace(/\D/g, "").length < 9
+                        ? "Enter a valid WhatsApp number above — that is where the details will go."
+                        : "Pick where your account details should be sent."}
+                  </p>
+                </fieldset>
               </div>
 
               <div className="field field-full">
@@ -214,8 +279,9 @@ export default function OrderPage() {
               <ul className="spec-list">
                 <li>We verify your payment against the proof you send.</li>
                 <li>
-                  Your access details arrive by email, usually within the hour
-                  during business hours.
+                  Your access details arrive by{" "}
+                  {delivery ? deliveryLabels[delivery].toLowerCase() : "email or WhatsApp"},
+                  usually within the hour during business hours.
                 </li>
                 <li>
                   Every plan keeps its warranty for the period shown on the

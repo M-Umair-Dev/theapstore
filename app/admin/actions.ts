@@ -14,8 +14,15 @@ import {
   type ProductType,
 } from "@/lib/products";
 import {
+  anonymiseCustomer,
+  countAdmins,
+  deleteOrder,
   deleteProduct,
   deleteProductImage,
+  deleteUser,
+  findUserByEmail,
+  getOrder,
+  markFulfilled,
   orderStatuses,
   renameProductImage,
   saveProductImage,
@@ -23,8 +30,9 @@ import {
   upsertProduct,
   type OrderStatus,
 } from "@/lib/repo";
+import { fulfillmentEmail, sendMail, type MailAttachment } from "@/lib/email";
 
-import { readImageField } from "@/lib/uploads";
+import { IMAGE_TYPES, MAX_IMAGE_BYTES, readImageField } from "@/lib/uploads";
 
 export type ActionState = { error?: string; ok?: string };
 
@@ -381,4 +389,301 @@ export async function updateOrderStatusAction(fd: FormData) {
 
   revalidatePath("/admin/orders");
   redirect(`/admin/orders?updated=${encodeURIComponent(reference)}`);
+}
+
+/** Order references are generated as `TAS-XXXXX`; nothing else reaches Mongo. */
+const REFERENCE = /^[A-Za-z0-9-]{4,32}$/;
+
+/** Where the form was submitted from, so the admin lands back on that view. */
+const returnTo = (fd: FormData, fallback: string) => {
+  const back = str(fd, "back");
+  return back.startsWith("/admin/") ? back : fallback;
+};
+
+const backTo = (path: string, key: string, value: string) =>
+  `${path}?${key}=${encodeURIComponent(value)}`;
+
+/**
+ * Permanently deletes an order and its payment screenshot. Admin-only, and the
+ * result comes from the database — a reference that does not exist reports an
+ * error rather than a success.
+ */
+export async function deleteOrderAction(fd: FormData) {
+  if (!(await guard())) redirect("/login?next=/admin/orders");
+
+  const path = returnTo(fd, "/admin/orders");
+  const reference = str(fd, "reference");
+
+  if (!REFERENCE.test(reference)) {
+    redirect(backTo(path, "error", "That order reference is not valid."));
+  }
+
+  let removed = false;
+  try {
+    removed = await deleteOrder(reference);
+  } catch {
+    removed = false;
+  }
+
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+
+  redirect(
+    removed
+      ? backTo(path, "deleted", reference)
+      : backTo(
+          path,
+          "error",
+          `Order ${reference} was not found — it may already have been deleted.`,
+        ),
+  );
+}
+
+/* ---------------- customers ---------------- */
+
+/**
+ * Erases a customer's details from their orders. Kept as an overwrite rather
+ * than a delete so the sales record and the payment screenshot survive.
+ */
+export async function deleteCustomerAction(fd: FormData) {
+  if (!(await guard())) redirect("/login?next=/admin/customers");
+
+  const path = returnTo(fd, "/admin/customers");
+  const email = str(fd, "email").toLowerCase();
+
+  if (!email) redirect(backTo(path, "error", "No customer was selected."));
+
+  let touched = 0;
+  try {
+    touched = await anonymiseCustomer(email);
+  } catch {
+    touched = 0;
+  }
+
+  revalidatePath("/admin/customers");
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+
+  redirect(
+    touched > 0
+      ? backTo(path, "deleted", email)
+      : backTo(path, "error", `No orders belong to ${email}.`),
+  );
+}
+
+/* ---------------- fulfilment ---------------- */
+
+/** Gmail accepts 25 MB; stay well under it and keep the panel responsive. */
+const MAX_ATTACHMENTS = 5;
+const MAX_ATTACHMENT_TOTAL = 10 * 1024 * 1024;
+
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Emails a customer their account details. Admin-only, and the order is only
+ * marked fulfilled once the SMTP server has accepted the message — a failed
+ * send reports the failure and leaves the order untouched, so "sent" always
+ * means something was actually handed to Gmail.
+ *
+ * The password is not persisted anywhere. Resending means typing it again.
+ */
+export async function sendAccountDetailsAction(fd: FormData) {
+  const admin = await currentAdmin();
+  if (!admin) redirect("/login?next=/admin/orders");
+
+  const path = returnTo(fd, "/admin/orders");
+  const reference = str(fd, "reference").toUpperCase();
+
+  if (!REFERENCE.test(reference)) {
+    redirect(backTo(path, "error", "That order reference is not valid."));
+  }
+
+  const order = await getOrder(reference);
+  if (!order) {
+    redirect(backTo(path, "error", `Order ${reference} does not exist.`));
+  }
+
+  const to = str(fd, "to").toLowerCase();
+  const username = str(fd, "username");
+  const password = str(fd, "password");
+  const duration = str(fd, "duration");
+  const instructions = str(fd, "instructions");
+  const notes = str(fd, "notes");
+
+  if (!EMAIL_SHAPE.test(to)) {
+    redirect(backTo(path, "error", "Enter a valid customer email address."));
+  }
+  if (!username) {
+    redirect(backTo(path, "error", "The account username or email is required."));
+  }
+
+  const files = fd
+    .getAll("attachments")
+    .filter((v): v is File => v instanceof File && v.size > 0);
+
+  if (files.length > MAX_ATTACHMENTS) {
+    redirect(
+      backTo(path, "error", `Attach at most ${MAX_ATTACHMENTS} images.`),
+    );
+  }
+
+  const attachments: MailAttachment[] = [];
+  let total = 0;
+
+  for (const file of files) {
+    if (!IMAGE_TYPES.includes(file.type)) {
+      redirect(
+        backTo(path, "error", `"${file.name}" is not a JPEG, PNG, WebP, AVIF or GIF.`),
+      );
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      redirect(backTo(path, "error", `"${file.name}" is larger than 4 MB.`));
+    }
+
+    total += file.size;
+    if (total > MAX_ATTACHMENT_TOTAL) {
+      redirect(
+        backTo(path, "error", "The attachments total more than 10 MB. Send fewer or smaller images."),
+      );
+    }
+
+    attachments.push({
+      filename: file.name,
+      content: Buffer.from(await file.arrayBuffer()),
+      contentType: file.type,
+    });
+  }
+
+  const { html, subject } = fulfillmentEmail({
+    reference: order.reference,
+    customerName: order.customer.name,
+    items: order.items.map((i) => ({
+      title: i.title,
+      planName: i.planName,
+      meta: i.meta,
+      qty: i.qty,
+    })),
+    username,
+    ...(password ? { password } : {}),
+    ...(duration ? { duration } : {}),
+    instructions,
+    ...(notes ? { notes } : {}),
+    attachmentCount: attachments.length,
+  });
+
+  const result = await sendMail({ to, subject, html, attachments });
+
+  if (!result.ok) {
+    revalidatePath("/admin/orders");
+    redirect(backTo(path, "error", result.error));
+  }
+
+  try {
+    await markFulfilled(order.reference, {
+      sentTo: to,
+      sentBy: admin.email ?? "unknown",
+      channel: "email",
+      messageId: result.messageId,
+    });
+  } catch {
+    // The message is already with Gmail. Losing the bookkeeping record is not
+    // worth telling the admin the send failed, but it is worth saying plainly.
+    revalidatePath("/admin/orders");
+    redirect(
+      backTo(
+        path,
+        "sent",
+        `${reference} (email accepted, but the sent record could not be saved)`,
+      ),
+    );
+  }
+
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+  redirect(backTo(path, "sent", reference));
+}
+
+/**
+ * Records that the admin sent the details over WhatsApp themselves. Opening a
+ * chat window proves nothing, so this only runs when the admin says they have
+ * actually sent the message — and it never sends anything by itself.
+ */
+export async function markWhatsAppSentAction(fd: FormData) {
+  const admin = await currentAdmin();
+  if (!admin) redirect("/login?next=/admin/orders");
+
+  const path = returnTo(fd, "/admin/orders");
+  const reference = str(fd, "reference").toUpperCase();
+
+  if (!REFERENCE.test(reference)) {
+    redirect(backTo(path, "error", "That order reference is not valid."));
+  }
+
+  const order = await getOrder(reference);
+  if (!order) {
+    redirect(backTo(path, "error", `Order ${reference} does not exist.`));
+  }
+
+  try {
+    await markFulfilled(reference, {
+      // The number the customer gave, not the store's own line.
+      sentTo: order.customer.phone,
+      sentBy: admin.email ?? "unknown",
+      channel: "whatsapp",
+    });
+  } catch {
+    revalidatePath("/admin/orders");
+    redirect(backTo(path, "error", "Could not record the delivery. Try again."));
+  }
+
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+  redirect(backTo(path, "whatsapp", reference));
+}
+
+/* ---------------- staff accounts ---------------- */
+/**
+ * Removes a sign-in account. Two cases are refused outright: the account the
+ * admin is signed in with, and the last remaining administrator — either would
+ * lock everyone out of this panel.
+ */
+export async function deleteStaffAction(fd: FormData) {
+  const admin = await currentAdmin();
+  if (!admin) redirect("/login?next=/admin/customers");
+
+  const path = returnTo(fd, "/admin/customers");
+  const email = str(fd, "email").toLowerCase();
+
+  if (!email) redirect(backTo(path, "error", "No account was selected."));
+  if (email === admin.email?.toLowerCase()) {
+    redirect(
+      backTo(path, "error", "You cannot delete the account you are signed in with."),
+    );
+  }
+
+  const target = await findUserByEmail(email);
+  if (!target) {
+    redirect(backTo(path, "error", `${email} does not exist.`));
+  }
+  if (target.role === "admin" && (await countAdmins()) <= 1) {
+    redirect(
+      backTo(path, "error", "That is the last administrator — the panel would be unreachable."),
+    );
+  }
+
+  let removed = false;
+  try {
+    removed = await deleteUser(email);
+  } catch {
+    removed = false;
+  }
+
+  revalidatePath("/admin/customers");
+  revalidatePath("/admin");
+
+  redirect(
+    removed
+      ? backTo(path, "deleted", email)
+      : backTo(path, "error", `Could not delete ${email}.`),
+  );
 }

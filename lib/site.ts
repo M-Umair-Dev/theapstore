@@ -8,11 +8,22 @@ export const site = {
   description:
     "A modern digital store providing digital subscriptions, tools and online services.",
   since: 2020,
-  email: "hello@theapstore.com",
+  /**
+   * Store contact address, shown on the Contact page and in the order
+   * instructions. Override with NEXT_PUBLIC_STORE_EMAIL — it must be prefixed
+   * NEXT_PUBLIC_ because the header and footer read it in the browser.
+   */
+  email: process.env.NEXT_PUBLIC_STORE_EMAIL ?? "elitestfashion@gmail.com",
   /** E.164 without "+". Leave empty to hide every WhatsApp action. */
   whatsapp: "923404000618",
   /** Display form, shown to customers. */
   whatsappDisplay: "+92 340 4000618",
+  /**
+   * Digits to prepend to a local `0…` number when building a wa.me link for an
+   * order. Only used for that shape — an already-international number is left
+   * exactly as the customer gave it.
+   */
+  whatsappCountryCode: "92",
   social: {
     linkedin: "https://linkedin.com",
     instagram: "https://instagram.com",

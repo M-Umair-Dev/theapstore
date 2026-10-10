@@ -13,9 +13,15 @@ import {
   parseSelectionId,
   priceFor,
 } from "@/lib/options";
+import { isDeliveryMethod, type DeliveryMethod } from "@/lib/order-status";
 import { readImageField } from "@/lib/uploads";
 
-export type OrderState = { error?: string; reference?: string };
+export type OrderState = {
+  error?: string;
+  reference?: string;
+  /** Echoed back so the confirmation can name where the details will go. */
+  delivery?: DeliveryMethod;
+};
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
@@ -103,6 +109,7 @@ export async function placeOrderAction(
   const phone = str(fd, "phone");
   const paymentMethod = str(fd, "method");
   const notes = str(fd, "notes");
+  const delivery = str(fd, "delivery");
 
   if (name.length < 2) return { error: "Enter your full name." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
@@ -113,6 +120,12 @@ export async function placeOrderAction(
   }
   if (!["Bank transfer", "Easypaisa", "JazzCash"].includes(paymentMethod)) {
     return { error: "Choose a payment method." };
+  }
+  // Only the two supported values are accepted, whatever the browser sent.
+  if (!isDeliveryMethod(delivery)) {
+    return {
+      error: "Choose how you would like to receive your account details.",
+    };
   }
 
   const priced = await priceCart(str(fd, "cart"));
@@ -132,6 +145,7 @@ export async function placeOrderAction(
       items: priced,
       total,
       paymentMethod,
+      deliveryMethod: delivery,
       ...(notes ? { notes } : {}),
     });
   } catch (e) {
@@ -153,5 +167,5 @@ export async function placeOrderAction(
     }
   }
 
-  return { reference };
+  return { reference, delivery };
 }

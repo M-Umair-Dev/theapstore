@@ -121,7 +121,7 @@
 .stat-grid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   margin-bottom: var(--space-7);
 }
 
@@ -229,6 +229,63 @@
 .admin-form {
   display: grid;
   gap: var(--space-5);
+}
+
+/* ---------- Destructive actions ---------- */
+
+.admin-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-7);
+  font-size: 14px;
+  color: var(--dark-muted);
+}
+
+.admin-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--dark-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: admin-spin 700ms linear infinite;
+}
+
+@keyframes admin-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-spinner {
+    animation-duration: 2400ms;
+  }
+}
+
+.btn-danger {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.btn-danger:hover:not(:disabled) {
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Status + delete sit side by side, wrapping on narrow screens. */
+.order-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
 }
 
 .admin-form .label {
@@ -407,6 +464,106 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
+}
+
+/* A hint sitting beside a button should take the leftover room rather than
+   squeeze the button. */
+.form-actions .hint {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* ---------- Fulfilment ---------- */
+
+/* The delivery picker is styled for the white storefront in ui.css; these
+   overrides put it on the admin's dark panels. */
+.admin-main .delivery-pick legend {
+  color: var(--white);
+  font-size: 15px;
+}
+
+.admin-main .delivery-card {
+  border-color: var(--dark-border);
+  background: #111111;
+}
+
+.admin-main .delivery-card:hover {
+  border-color: var(--primary-on-dark);
+}
+
+.admin-main .delivery-card:has(input:checked) {
+  border-color: var(--primary);
+  background: rgb(229 9 20 / 0.12);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.admin-main .delivery-name {
+  color: var(--white);
+}
+
+.admin-main .delivery-note {
+  color: var(--dark-muted);
+}
+
+/* The prefilled WhatsApp text, shown before anything leaves the panel. */
+.wa-preview {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #111111;
+}
+
+.wa-preview pre {
+  margin: var(--space-3) 0 0;
+  max-height: 320px;
+  overflow: auto;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--white);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.head-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.whatsapp-send {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #111111;
+}
+
+.fulfil {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--dark-border);
+}
+
+.fulfil summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  list-style-position: inside;
+}
+
+.fulfil summary::marker {
+  color: var(--primary);
+}
+
+.fulfil summary:hover {
+  color: var(--primary-on-dark);
 }
 
 /* Secondary buttons inside the panel read as outlines on black. */

@@ -1,5 +1,9 @@
 import { getDb } from "./mongodb.ts";
-import { orderStatuses, type OrderStatus } from "./order-status.ts";
+import {
+  orderStatuses,
+  type DeliveryMethod,
+  type OrderStatus,
+} from "./order-status.ts";
 import type { Product } from "./products.ts";
 
 /* ---------------- types ---------------- */
@@ -8,6 +12,7 @@ import type { Product } from "./products.ts";
 // live in order-status.ts, which client components can import safely.
 export { orderStatuses };
 export type { OrderStatus };
+export type { DeliveryMethod };
 
 export type OrderItem = {
   slug: string;
@@ -17,6 +22,26 @@ export type OrderItem = {
   meta: string;
   price: number;
   qty: number;
+};
+
+/**
+ * Record of account details being emailed to the customer. Deliberately holds
+ * no credentials — only who sent what, to whom. The password the admin typed
+ * lives in the outgoing message and nowhere else, so a resend means typing it
+ * again; that is the price of never keeping a customer's password at rest.
+ */
+export type OrderFulfillment = {
+  sentAt: Date;
+  sentTo: string;
+  /** Email of the admin who sent it. */
+  sentBy: string;
+  /** How it went out. WhatsApp is recorded when the admin confirms they sent
+   *  it themselves — opening a chat window is not a delivery. */
+  channel: DeliveryMethod;
+  /** SMTP id of the last message, for chasing one that never arrived. */
+  messageId?: string;
+  /** 1 on the first send, higher after a resend. */
+  count: number;
 };
 
 export type Order = {
@@ -32,6 +57,12 @@ export type Order = {
   /** MIME type of the payment screenshot, if the customer uploaded one. */
   receiptContentType?: string;
   status: OrderStatus;
+  /** How the customer asked to receive their details. Absent on orders placed
+   *  before the choice existed — read it through `deliveryLabel`. */
+  deliveryMethod?: DeliveryMethod;
+  /** Present once account details have been sent. Payment status above is
+   *  tracked separately. */
+  fulfillment?: OrderFulfillment;
   createdAt: Date;
 };
 
@@ -258,6 +289,36 @@ export async function updateOrderStatus(
   await orders().updateOne({ reference }, { $set: { status } });
 }
 
+/**
+ * Records that the account details were emailed. Called only after the SMTP
+ * server accepted the message, so the timestamp means "sent", not "attempted".
+ * `$inc` keeps the resend count accurate without a read first.
+ */
+export async function markFulfilled(
+  reference: string,
+  entry: {
+    sentTo: string;
+    sentBy: string;
+    channel: DeliveryMethod;
+    messageId?: string;
+  },
+) {
+  await ensureIndexes();
+  await orders().updateOne(
+    { reference },
+    {
+      $set: {
+        "fulfillment.sentAt": new Date(),
+        "fulfillment.sentTo": entry.sentTo,
+        "fulfillment.sentBy": entry.sentBy,
+        "fulfillment.channel": entry.channel,
+        ...(entry.messageId ? { "fulfillment.messageId": entry.messageId } : {}),
+      },
+      $inc: { "fulfillment.count": 1 },
+    },
+  );
+}
+
 /* ---------------- payment receipts ---------------- */
 
 export async function saveOrderReceipt(
@@ -303,6 +364,68 @@ export async function listUsers() {
 export async function setUserRole(email: string, role: Role) {
   await ensureIndexes();
   await users().updateOne({ email }, { $set: { role } });
+}
+
+/**
+ * Removes a staff sign-in account. Returns false when the email is unknown, so
+ * the caller can tell the admin the truth instead of reporting a success that
+ * did not happen.
+ */
+export async function deleteUser(email: string) {
+  await ensureIndexes();
+  const res = await users().deleteOne({ email: email.trim().toLowerCase() });
+  return res.deletedCount === 1;
+}
+
+/* ---------------- deletions ---------------- */
+
+/** Shown in place of a customer's details once their record is erased. */
+export const DELETED_CUSTOMER = {
+  name: "Deleted customer",
+  email: "deleted@removed.invalid",
+  phone: "—",
+} as const;
+
+/**
+ * Permanently removes an order and the payment screenshot filed against it.
+ * The receipt is a separate document keyed by the same reference, so leaving it
+ * behind would orphan image data with no order to belong to.
+ *
+ * Returns false when the reference is unknown, so the UI never claims a
+ * deletion that did not happen.
+ */
+export async function deleteOrder(reference: string) {
+  await ensureIndexes();
+  const [order] = await Promise.all([
+    orders().deleteOne({ reference }),
+    receipts().deleteMany({ reference }),
+  ]);
+  return order.deletedCount === 1;
+}
+
+/**
+ * Erases a customer's personal details from every order they placed.
+ *
+ * There are no customer accounts to delete — a customer exists only as the
+ * name, email and phone on their orders. Wiping the whole order would destroy
+ * the sales record and the payment screenshot the business may still need, so
+ * the identifying fields are overwritten and the rest of the order is kept.
+ *
+ * Tracking stops working for those orders, because `findOrderForTracking`
+ * requires the email the customer ordered with and it no longer exists.
+ *
+ * Returns how many orders were rewritten; zero means no such customer.
+ */
+export async function anonymiseCustomer(email: string) {
+  await ensureIndexes();
+  const target = email.trim().toLowerCase();
+  if (!target) return 0;
+
+  const res = await orders().updateMany(
+    { "customer.email": target },
+    { $set: { customer: { ...DELETED_CUSTOMER } }, $unset: { userId: "" } },
+  );
+  return res.modifiedCount;
 }
 
 export async function countUsers() {

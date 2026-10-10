@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { formatPrice } from "./products";
+import { isDeliveryMethod, type DeliveryMethod } from "./order-status";
 
 /**
  * Lines snapshot the title, plan and price at the moment they were added, so
@@ -152,3 +153,30 @@ export const cartTotal = (lines: CartLine[]) =>
   lines.reduce((sum, l) => sum + l.price * l.qty, 0);
 
 export const formatTotal = (lines: CartLine[]) => formatPrice(cartTotal(lines));
+
+/* ---------------- delivery preference ---------------- */
+
+const DELIVERY_KEY = "theapstore.delivery";
+
+/**
+ * Carries the customer's choice from the cart to the checkout form. This is a
+ * convenience only — the order itself stores the method, and a missing or
+ * tampered value here just means the checkout starts with nothing selected.
+ */
+export function readDelivery(): DeliveryMethod | "" {
+  try {
+    const raw = localStorage.getItem(DELIVERY_KEY);
+    return isDeliveryMethod(raw) ? raw : "";
+  } catch {
+    // Private mode, blocked storage — the checkbox just starts empty.
+    return "";
+  }
+}
+
+export function writeDelivery(method: DeliveryMethod) {
+  try {
+    localStorage.setItem(DELIVERY_KEY, method);
+  } catch {
+    // Not worth surfacing: the checkout still collects the choice.
+  }
+}
