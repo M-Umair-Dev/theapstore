@@ -5,6 +5,14 @@ import {
   type OrderStatus,
 } from "./order-status.ts";
 import type { Product } from "./products.ts";
+import {
+  demoPaymentMethods,
+  isAvailable,
+  paymentMethodIds,
+  type PaymentMethodConfig,
+  type PaymentMethodId,
+  type PaymentSettings,
+} from "./payments.ts";
 
 /* ---------------- types ---------------- */
 
@@ -52,7 +60,15 @@ export type Order = {
   customer: { name: string; email: string; phone: string };
   items: OrderItem[];
   total: number;
+  /** Human label, denormalised so renaming a method never rewrites history. */
   paymentMethod: string;
+  /** Which configured method was chosen. Absent on orders placed before the
+   *  catalogue existed — read the label above for those. */
+  paymentMethodId?: PaymentMethodId;
+  /** Crypto only, snapshotted so editing the configuration later never changes
+   *  what this order says the customer was told to send. */
+  paymentAsset?: string;
+  paymentNetwork?: string;
   notes?: string;
   /** MIME type of the payment screenshot, if the customer uploaded one. */
   receiptContentType?: string;
@@ -436,6 +452,75 @@ export async function countUsers() {
 export async function countAdmins() {
   await ensureIndexes();
   return users().countDocuments({ role: "admin" });
+}
+
+/* ---------------- payment settings ---------------- */
+
+/** One document, fixed id. Cheaper to read than a collection of fragments. */
+const settings = () =>
+  getDb().collection<{ _id: string } & Record<string, unknown>>("settings");
+
+const PAYMENTS_ID = "payments";
+
+/**
+ * Reads the payment configuration. When nothing is stored yet the demo
+ * placeholders are written once and returned — seeding only on an empty
+ * collection means real details an admin has entered are never overwritten.
+ *
+ * A method added to the catalogue later (crypto, say) is appended for existing
+ * installs, with its own defaults. Stored configuration for the other methods
+ * is left exactly as it was.
+ */
+export async function getPaymentSettings(): Promise<PaymentSettings> {
+  await ensureIndexes();
+  const doc = await settings().findOne({ _id: PAYMENTS_ID });
+
+  const stored = Array.isArray(doc?.methods)
+    ? (doc.methods as PaymentMethodConfig[])
+    : [];
+  const defaults = demoPaymentMethods();
+
+  const methods = paymentMethodIds.map(
+    (id) =>
+      stored.find((m) => m.id === id) ??
+      (defaults.find((m) => m.id === id) as PaymentMethodConfig),
+  );
+
+  const changed =
+    methods.length !== stored.length ||
+    methods.some((m, i) => m !== stored[i]);
+
+  if (changed) {
+    await settings().updateOne(
+      { _id: PAYMENTS_ID },
+      { $set: { methods, updatedAt: new Date() } },
+      { upsert: true },
+    );
+  }
+
+  return {
+    methods,
+    ...(doc?.updatedAt ? { updatedAt: doc.updatedAt as Date } : {}),
+  };
+}
+
+/**
+ * Replaces the configuration. Every known method is written, so a method that
+ * is merely hidden keeps its account details rather than being dropped.
+ */
+export async function savePaymentSettings(methods: PaymentMethodConfig[]) {
+  await ensureIndexes();
+  await settings().updateOne(
+    { _id: PAYMENTS_ID },
+    { $set: { methods, updatedAt: new Date() } },
+    { upsert: true },
+  );
+}
+
+/** Only what a customer needs to pay, and only methods they may pick. */
+export async function availablePaymentMethods(): Promise<PaymentMethodConfig[]> {
+  const { methods } = await getPaymentSettings();
+  return methods.filter(isAvailable);
 }
 
 /* ---------------- dashboard ---------------- */

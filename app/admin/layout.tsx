@@ -25,6 +25,7 @@ export default async function AdminLayout({
     { href: "/admin/products", label: "Products", count: stats.products },
     { href: "/admin/orders", label: "Orders", count: stats.orders },
     { href: "/admin/customers", label: "Customers", count: stats.customers },
+    { href: "/admin/payments", label: "Payment Methods" },
   ];
 
   return (

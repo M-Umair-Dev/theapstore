@@ -104,10 +104,9 @@ export default async function AdminProducts({
                             value={product.slug}
                           />
                           <ConfirmSubmit
+                            label="Delete"
                             message={`Delete "${product.title}"? This cannot be undone.`}
-                          >
-                            Delete
-                          </ConfirmSubmit>
+                          />
                         </form>
                       </div>
                     </td>

@@ -25,12 +25,19 @@ import {
   markFulfilled,
   orderStatuses,
   renameProductImage,
+  savePaymentSettings,
   saveProductImage,
   updateOrderStatus,
   upsertProduct,
   type OrderStatus,
 } from "@/lib/repo";
 import { fulfillmentEmail, sendMail, type MailAttachment } from "@/lib/email";
+import {
+  isPlaceholderWallet,
+  paymentLabel,
+  paymentMethodIds,
+  type PaymentMethodConfig,
+} from "@/lib/payments";
 
 import { IMAGE_TYPES, MAX_IMAGE_BYTES, readImageField } from "@/lib/uploads";
 
@@ -639,6 +646,93 @@ export async function markWhatsAppSentAction(fd: FormData) {
   revalidatePath("/admin/orders");
   revalidatePath("/admin");
   redirect(backTo(path, "whatsapp", reference));
+}
+
+/* ---------------- payment settings ---------------- */
+
+/**
+ * Writes the whole payment configuration. Every known method is saved, so
+ * hiding one keeps its account details for later rather than deleting them.
+ */
+export async function savePaymentSettingsAction(fd: FormData) {
+  if (!(await guard())) redirect("/login?next=/admin/payments");
+
+  const text = (key: string) => str(fd, key);
+  const flag = (key: string) => fd.get(key) === "on";
+
+  const methods: PaymentMethodConfig[] = paymentMethodIds.map((id) => ({
+    id,
+    accountTitle: text(`title:${id}`),
+    accountNumber: text(`number:${id}`),
+    enabled: flag(`enabled:${id}`),
+    visible: flag(`visible:${id}`),
+    ...(id === "bank_transfer"
+      ? {
+          bankName: text(`bankName:${id}`),
+          iban: text(`iban:${id}`),
+          branch: text(`branch:${id}`),
+        }
+      : {}),
+    ...(id === "crypto"
+      ? { asset: text(`asset:${id}`), network: text(`network:${id}`) }
+      : {}),
+    ...(text(`instructions:${id}`)
+      ? { instructions: text(`instructions:${id}`) }
+      : {}),
+  }));
+
+  // A method with no account to pay into would leave the customer stuck, so it
+  // is switched off here rather than at checkout.
+  const unusable = methods.find(
+    (m) => (m.enabled || m.visible) && (!m.accountTitle || !m.accountNumber),
+  );
+  if (unusable) {
+    redirect(
+      backTo(
+        "/admin/payments",
+        "error",
+        `${paymentLabel(unusable.id)} needs an account title and a number before it can be shown.`,
+      ),
+    );
+  }
+
+  // A placeholder wallet would send a customer's money nowhere. Refused rather
+  // than merely hidden, so the admin knows why it will not appear.
+  const crypto = methods.find((m) => m.id === "crypto");
+  if (
+    crypto &&
+    (crypto.enabled || crypto.visible) &&
+    isPlaceholderWallet(crypto.accountNumber)
+  ) {
+    redirect(
+      backTo(
+        "/admin/payments",
+        "error",
+        "Crypto Payment needs a real TRC20 wallet address before it can be enabled or shown. The placeholder is still in place.",
+      ),
+    );
+  }
+  if (crypto && (crypto.enabled || crypto.visible) && (!crypto.asset || !crypto.network)) {
+    redirect(
+      backTo(
+        "/admin/payments",
+        "error",
+        "Crypto Payment needs both the coin and the network — USDT on TRC20 is not the same as USDT on ERC20.",
+      ),
+    );
+  }
+
+  try {
+    await savePaymentSettings(methods);
+  } catch {
+    redirect(
+      backTo("/admin/payments", "error", "Could not save the payment settings."),
+    );
+  }
+
+  revalidatePath("/admin/payments");
+  revalidatePath("/order");
+  redirect(backTo("/admin/payments", "saved", "1"));
 }
 
 /* ---------------- staff accounts ---------------- */

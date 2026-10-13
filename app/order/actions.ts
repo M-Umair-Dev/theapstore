@@ -4,6 +4,7 @@ import {
   createOrder,
   getProductBySlug,
   saveOrderReceipt,
+  availablePaymentMethods,
   type OrderItem,
 } from "@/lib/repo";
 import {
@@ -14,13 +15,18 @@ import {
   priceFor,
 } from "@/lib/options";
 import { isDeliveryMethod, type DeliveryMethod } from "@/lib/order-status";
+import { paymentLabel } from "@/lib/payments";
 import { readImageField } from "@/lib/uploads";
+import { orderFollowUpMessage } from "@/lib/whatsapp";
 
 export type OrderState = {
   error?: string;
   reference?: string;
   /** Echoed back so the confirmation can name where the details will go. */
   delivery?: DeliveryMethod;
+  /** Ready-to-send follow-up text for the confirmation screen's WhatsApp
+   *  button, built from the order that was just created. */
+  followUp?: string;
 };
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
@@ -118,8 +124,18 @@ export async function placeOrderAction(
   if (phone.replace(/\D/g, "").length < 9) {
     return { error: "Enter a valid phone number." };
   }
-  if (!["Bank transfer", "Easypaisa", "JazzCash"].includes(paymentMethod)) {
-    return { error: "Choose a payment method." };
+
+  // Re-read the configuration rather than trusting the id the browser sent: a
+  // method can be hidden or disabled between opening checkout and submitting.
+  const methods = await availablePaymentMethods();
+  const chosen = methods.find((m) => m.id === paymentMethod);
+  if (!chosen) {
+    return {
+      error:
+        methods.length > 0
+          ? "That payment method is no longer available. Pick another one."
+          : "No payment method is available right now. Please contact us to complete your order.",
+    };
   }
   // Only the two supported values are accepted, whatever the browser sent.
   if (!isDeliveryMethod(delivery)) {
@@ -144,7 +160,16 @@ export async function placeOrderAction(
       customer: { name, email, phone },
       items: priced,
       total,
-      paymentMethod,
+      paymentMethod: paymentLabel(chosen.id),
+      paymentMethodId: chosen.id,
+      // Snapshotted at order time: USDT on TRC20 and USDT on ERC20 are not the
+      // same destination, and the configuration can be edited afterwards.
+      ...(chosen.id === "crypto" && chosen.asset
+        ? { paymentAsset: chosen.asset }
+        : {}),
+      ...(chosen.id === "crypto" && chosen.network
+        ? { paymentNetwork: chosen.network }
+        : {}),
       deliveryMethod: delivery,
       ...(notes ? { notes } : {}),
     });
@@ -167,5 +192,25 @@ export async function placeOrderAction(
     }
   }
 
-  return { reference, delivery };
+  // Built here, from the order that was just written, because the confirmation
+  // screen no longer has the cart and must not go looking the order up again.
+  const followUp = orderFollowUpMessage({
+    reference,
+    customerName: name,
+    customerEmail: email,
+    customerPhone: phone,
+    paymentMethod: paymentLabel(chosen.id),
+    paymentStatus: "pending",
+    deliveryMethod: delivery === "whatsapp" ? "WhatsApp" : "Email",
+    items: priced.map((i) => ({
+      title: i.title,
+      planName: i.planName,
+      meta: i.meta,
+      qty: i.qty,
+    })),
+    total,
+    placedAt: new Date(),
+  });
+
+  return { reference, delivery, followUp };
 }

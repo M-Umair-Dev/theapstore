@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { placeOrderAction, type OrderState } from "@/app/order/actions";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import PaymentPicker from "@/components/PaymentPicker";
+import { usePaymentMethods } from "@/components/PaymentMethodsContext";
 import { useCart, readDelivery } from "@/lib/cart";
 import {
   deliveryLabels,
@@ -18,6 +20,9 @@ import { cartMessage, waLink } from "@/lib/whatsapp";
 const initial: OrderState = {};
 
 export default function OrderPage() {
+  // Loaded by the route's layout on the server — this page is a client
+  // component because the cart lives in localStorage.
+  const { methods, logos } = usePaymentMethods();
   const { lines, ready, clear } = useCart();
   const [state, action, pending] = useActionState(placeOrderAction, initial);
   const cleared = useRef(false);
@@ -33,6 +38,10 @@ export default function OrderPage() {
 
   const total = lines.reduce((sum, l) => sum + l.price * l.qty, 0);
   const whatsapp = waLink(cartMessage(lines, total));
+
+  // The cart is cleared once the order exists, so its message would arrive
+  // empty. The follow-up is built server-side from the order itself.
+  const followUp = state.followUp ? waLink(state.followUp) : null;
 
   // Empty the cart once, after the order has a reference.
   useEffect(() => {
@@ -65,9 +74,9 @@ export default function OrderPage() {
             >
               Track this order
             </Link>
-            {whatsapp && (
+            {followUp && (
               <a
-                href={whatsapp}
+                href={followUp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-whatsapp"
@@ -177,16 +186,8 @@ export default function OrderPage() {
                 />
               </div>
 
-              <div className="field">
-                <label className="label" htmlFor="method">
-                  Payment method
-                </label>
-                <select id="method" name="method" className="select" required>
-                  <option value="">Choose a method</option>
-                  <option>Bank transfer</option>
-                  <option>Easypaisa</option>
-                  <option>JazzCash</option>
-                </select>
+              <div className="field field-full">
+                <PaymentPicker methods={methods} logos={logos} />
               </div>
 
               <div className="field field-full">

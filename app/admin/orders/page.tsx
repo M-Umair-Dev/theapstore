@@ -252,9 +252,18 @@ export default async function AdminOrders({
               </div>
               <div>
                 <div className="stat-label">Payment</div>
-                <p style={{ marginTop: 6 }}>{order.paymentMethod}</p>
+                <p style={{ marginTop: 6 }}>
+                  <strong>{order.paymentMethod}</strong>
+                </p>
                 <p className="muted">
                   Total {formatPrice(order.total)}
+                  {order.paymentAsset && (
+                    <>
+                      <br />
+                      {order.paymentAsset}
+                      {order.paymentNetwork ? ` · ${order.paymentNetwork}` : ""}
+                    </>
+                  )}
                   {order.notes ? (
                     <>
                       <br />
