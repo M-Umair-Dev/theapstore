@@ -133,6 +133,14 @@
   color: var(--muted);
 }
 
+/* The chip keeps a literal white background, so it needs its own dark variant
+   rather than inheriting the remapped text colour. */
+.dark .chip {
+  background: var(--dark-surface);
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+
 .chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -471,7 +479,9 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--primary);
+  /* Darker red: #e50914 on the hero's #f7f7f7 reaches only 4.4:1, just under
+     AA for text this small. This reaches 6.6:1. */
+  color: var(--primary-dark);
 }
 
 .hero-title {
@@ -831,7 +841,9 @@
   position: relative;
   padding: var(--space-6);
   padding-top: var(--space-7);
-  background: var(--white);
+  /* A dark card, not a white one. It sits inside `.dark`, where headings
+     inherit white — a white card left the step title invisible on white. */
+  background: var(--dark-surface);
   border: 1px solid var(--dark-border);
   border-radius: var(--radius-lg);
 }
@@ -1793,12 +1805,16 @@
 }
 
 /* Links inside the sticky summary and prose blocks read as brand red. */
-.summary-card a,
+/* Links in prose and in a summary card. Buttons are excluded: the summary row
+   holds button-styled links, and this rule was beating their own colours —
+   it turned Buy on WhatsApp red-on-green and made the primary button's label
+   red on red, which is invisible. */
+.summary-card a:not(.btn),
 .prose a {
   color: var(--primary);
 }
 
-.summary-card a:hover,
+.summary-card a:not(.btn):hover,
 .prose a:hover {
   text-decoration: underline;
 }
@@ -2093,3 +2109,167 @@
     padding-inline: var(--space-4);
   }
 }
+
+/* ---------- Finish ---------- */
+
+/* Headings break evenly, body copy avoids a lone trailing word. Both are
+   ignored by browsers that do not support them. */
+h1,
+h2,
+h3,
+.hero-title,
+.section-title {
+  text-wrap: balance;
+}
+
+p,
+li,
+.section-lead,
+.hero-lead,
+.delivery-note {
+  text-wrap: pretty;
+}
+
+/* A hint of depth under the sticky header, and enough translucency that
+   content scrolling beneath it stays faintly visible. Falls back to flat white
+   where backdrop-filter is unsupported. */
+.site-header {
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: saturate(180%) blur(10px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+/* Clipped so a zoomed product image cannot spill over the card edge. */
+.card-media {
+  overflow: hidden;
+}
+
+.card {
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.card-price {
+  letter-spacing: -0.02em;
+}
+
+/* A soft red wash behind the hero, so the fold reads as branded rather than
+   as a plain grey band. */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -180px;
+  right: -140px;
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, rgb(229 9 20 / 0.1), transparent 68%);
+  pointer-events: none;
+}
+
+.hero .container {
+  position: relative;
+}
+
+/* ---------- Motion ----------
+   Everything below sits behind prefers-reduced-motion: no-preference. A user
+   who asked for less motion gets the plain layout — not a layout with content
+   hidden waiting on an animation that will never run. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes drop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .hero-grid {
+    animation: rise 520ms var(--ease-out) both;
+  }
+
+  /* Grid children arrive in sequence. Capped at eight so a long catalogue does
+     not leave the last card waiting. */
+  .grid > *,
+  .steps > * {
+    animation: rise 420ms var(--ease-out) both;
+  }
+
+  .grid > *:nth-child(2),
+  .steps > *:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .grid > *:nth-child(3),
+  .steps > *:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .grid > *:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .grid > *:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .grid > *:nth-child(6) {
+    animation-delay: 200ms;
+  }
+  .grid > *:nth-child(7) {
+    animation-delay: 240ms;
+  }
+  .grid > *:nth-child(n + 8) {
+    animation-delay: 280ms;
+  }
+
+  /* Overlays open instead of appearing. */
+  .mobile-nav.is-open,
+  .search-drop {
+    animation: drop-in 180ms var(--ease-out) both;
+  }
+
+  /* Product image eases in on hover. */
+  .card-media img {
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .card:hover .card-media img {
+    transform: scale(1.05);
+  }
+
+  /* Press feedback on every button and button-styled link. */
+  .btn:active,
+  .qty-btn:active,
+  .copy-btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn {
+    transition:
+      background var(--transition),
+      color var(--transition),
+      border-color var(--transition),
+      box-shadow var(--transition),
+      transform var(--transition);
+  }
+}
+

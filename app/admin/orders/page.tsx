@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ConfirmSubmit from "@/components/ConfirmSubmit";
 import FulfilmentForm from "@/components/FulfilmentForm";
+import ReceiptViewer from "@/components/ReceiptViewer";
 import {
   deleteOrderAction,
   markWhatsAppSentAction,
@@ -317,20 +318,7 @@ export default async function AdminOrders({
             <div className="receipt-block">
               <div className="stat-label">Payment screenshot</div>
               {order.receiptContentType ? (
-                <>
-                  <a
-                    href={`/api/receipt/${order.reference}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/api/receipt/${order.reference}`}
-                      alt={`Payment screenshot for ${order.reference}`}
-                    />
-                  </a>
-                  <p className="hint">Click to open full size.</p>
-                </>
+                <ReceiptViewer reference={order.reference} />
               ) : (
                 <p className="hint">
                   No screenshot uploaded. Ask the customer to send it on

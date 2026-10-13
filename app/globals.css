@@ -13,11 +13,13 @@
   --muted: #666666;
   --border: #e5e5e5;
 
-  /* Dark sections */
-  --dark-bg: var(--black);
-  --dark-text: var(--white);
-  --dark-muted: #a3a3a3;
-  --dark-border: #262626;
+  /* Dark sections — Midnight Red. Every value here is checked against
+     --dark-bg for WCAG AA. */
+  --dark-bg: #111111;
+  --dark-surface: #252525;
+  --dark-text: #ffffff;
+  --dark-muted: #b8b8b8;
+  --dark-border: #383838;
 
   /* WhatsApp brand green — the one sanctioned exception to the palette,
      because the button has to read as WhatsApp at a glance. */
@@ -47,6 +49,9 @@
 
   /* Motion */
   --transition: 160ms ease;
+  /* Longer curves for things that travel more than a few pixels. */
+  --transition-slow: 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
 
   /* Layout */
   --container: 1200px;
@@ -118,10 +123,48 @@ select {
   padding-inline: var(--space-5);
 }
 
-/* Dark section: set on any wrapper. */
+/* ---------- Global polish ---------- */
+
+::selection {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* One visible focus ring everywhere. Form controls keep their own ring, so
+   they opt out rather than showing two. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible,
+.search-input:focus-visible {
+  outline: none;
+}
+
+/* Anchors jump rather than slide when the user has asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Dark section: set on any wrapper.
+ *
+ * The light-theme tokens are re-pointed for everything inside. A component
+ * that says `color: var(--muted)` on a white card and the same component on a
+ * dark one now both resolve to a readable value, with no `.dark .thing`
+ * override for every selector — which is how half of these went missing. */
 .dark {
   background: var(--dark-bg);
   color: var(--dark-text);
+  --background: var(--dark-bg);
+  --surface: var(--dark-surface);
+  --text: var(--dark-text);
+  --muted: var(--dark-muted);
+  --border: var(--dark-border);
 }
 
 .dark h1,

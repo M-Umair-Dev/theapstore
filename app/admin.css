@@ -296,29 +296,34 @@
   color: var(--dark-muted);
 }
 
-.admin-form .input,
-.admin-form .textarea,
-.admin-form .select {
+/* Scoped to the shell, not to .admin-form. A status <select> sitting in an
+   order's action row is outside any form wrapper, so it was picking up the
+   light storefront styling — a white box with white text in it. Everything in
+   this panel is on a dark surface. */
+.admin-shell .input,
+.admin-shell .textarea,
+.admin-shell .select {
   background: #111111;
   border-color: var(--dark-border);
   color: var(--white);
 }
 
-.admin-form .input::placeholder,
-.admin-form .textarea::placeholder {
-  color: #555555;
+.admin-shell .input::placeholder,
+.admin-shell .textarea::placeholder {
+  color: #767676;
 }
 
-.admin-form .input:focus,
-.admin-form .textarea:focus,
-.admin-form .select:focus {
+.admin-shell .input:focus,
+.admin-shell .textarea:focus,
+.admin-shell .select:focus {
   border-color: var(--primary-on-dark);
   box-shadow: 0 0 0 3px rgb(229 9 20 / 0.25);
   outline: none;
 }
 
-.admin-form .select option {
+.admin-shell .select option {
   background: #111111;
+  color: var(--white);
 }
 
 .form-row {
@@ -471,6 +476,70 @@
 .form-actions .hint {
   flex: 1;
   min-width: 220px;
+}
+
+/* ---------- Receipt viewer ---------- */
+
+.receipt-thumb {
+  display: block;
+  padding: 0;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.receipt-thumb img {
+  max-width: 220px;
+  max-height: 160px;
+  object-fit: contain;
+}
+
+.receipt-thumb:hover {
+  border-color: var(--primary-on-dark);
+}
+
+.receipt-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: rgb(0 0 0 / 0.82);
+}
+
+.receipt-modal-body {
+  max-width: min(960px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.receipt-modal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 14px;
+  color: var(--white);
+}
+
+.receipt-modal-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.receipt-modal-body img {
+  max-width: 100%;
+  max-height: 74vh;
+  margin-inline: auto;
+  border-radius: var(--radius);
+  background: var(--white);
+  object-fit: contain;
 }
 
 /* ---------- Fulfilment ---------- */
