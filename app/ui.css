@@ -171,16 +171,25 @@
   flex-shrink: 0;
 }
 
-.logo-mark {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
+/* The brand mark. White plate so the same artwork works on the white header
+   and on the black footer/admin sidebar without recolouring it. */
+.logo-art {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
   border-radius: var(--radius);
-  background: var(--primary);
-  color: var(--white);
-  font-weight: 800;
-  font-size: 17px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.logo-art-img {
+  /* Contain, never cover: the artwork must not be cropped or stretched. */
+  object-fit: contain;
+  padding: 2px;
 }
 
 .logo-name {
@@ -1897,6 +1906,16 @@
   color: var(--white);
 }
 
+/* The brand text is dark by default for the white header. On the black footer
+   that left the store name invisible and the subtitle at 4.4:1. */
+.site-footer .logo-name {
+  color: var(--white);
+}
+
+.site-footer .logo-sub {
+  color: var(--dark-muted);
+}
+
 .footer-grid {
   display: grid;
   grid-template-columns: 1.6fr repeat(4, 1fr);
@@ -1982,6 +2001,14 @@
 .footer-social a:hover {
   border-color: var(--primary-on-dark);
   color: var(--primary-on-dark);
+}
+
+/* A real brand asset when one is present in public/social/. Sized to sit
+   inside the same 36px badge as the letter fallback, never stretched. */
+.social-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .footer-bottom {

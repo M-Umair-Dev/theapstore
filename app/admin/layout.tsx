@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/auth";
+import Logo from "@/components/Logo";
 import { site } from "@/lib/site";
 import { adminStats } from "@/lib/repo";
 import { signOutAction } from "./actions";
@@ -32,9 +33,7 @@ export default async function AdminLayout({
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <Link href="/admin" className="admin-brand">
-          <span className="logo-mark" aria-hidden="true">
-            A
-          </span>
+          <Logo />
           <span>
             <span className="logo-name">{site.name}</span>
             <span className="logo-sub">Admin</span>

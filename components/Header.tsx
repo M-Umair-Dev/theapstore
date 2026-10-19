@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
+import Logo from "@/components/Logo";
 import SearchBox from "@/components/SearchBox";
 import { site } from "@/lib/site";
 
@@ -23,9 +24,7 @@ export default function Header() {
       <div className="container">
         <div className="header-inner">
           <Link href="/" className="logo">
-            <span className="logo-mark" aria-hidden="true">
-              A
-            </span>
+            <Logo />
             <span>
               <span className="logo-name">{site.name}</span>
               <span className="logo-sub">{site.tagline}</span>

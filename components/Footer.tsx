@@ -1,9 +1,50 @@
 import Link from "next/link";
+import Logo from "@/components/Logo";
+import type { SocialId } from "@/lib/social-logos";
 import { site } from "@/lib/site";
 import { waEnabled, waLink } from "@/lib/whatsapp";
 
-export default function Footer() {
+/**
+ * A footer social badge. Uses the brand's own asset when one has been placed
+ * in public/social/, and the account's letters when not — never a drawn
+ * imitation of someone else's mark. The anchor carries the name, so the image
+ * is decorative.
+ */
+function SocialBadge({
+  label,
+  href,
+  logo,
+  mark,
+}: {
+  label: string;
+  href: string;
+  logo: string | null;
+  mark: string;
+}) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label}>
+      {logo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={logo} alt="" className="social-logo" />
+      ) : (
+        mark
+      )}
+    </a>
+  );
+}
+
+/**
+ * The logo paths are resolved by the server layout and passed down, because
+ * this component is rendered inside a client tree and the lookup reads the
+ * filesystem.
+ */
+export default function Footer({
+  socialLogos,
+}: {
+  socialLogos: Record<SocialId, string | null>;
+}) {
   const whatsapp = waLink(`Hello ${site.name}, I have a question.`);
+  const logos = socialLogos;
 
   return (
     <footer className="site-footer">
@@ -11,9 +52,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link href="/" className="logo">
-              <span className="logo-mark" aria-hidden="true">
-                A
-              </span>
+              <Logo />
               <span>
                 <span className="logo-name">{site.name}</span>
                 <span className="logo-sub">{site.tagline}</span>
@@ -31,30 +70,26 @@ export default function Footer() {
               )}
             </div>
             <div className="footer-social">
-              <a
-                href={site.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-              >
-                in
-              </a>
-              <a
-                href={site.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-              >
-                ig
-              </a>
-              <a
-                href={site.social.x}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X"
-              >
-                x
-              </a>
+              {waEnabled && whatsapp && (
+                <SocialBadge
+                  label="WhatsApp"
+                  href={whatsapp}
+                  logo={logos.whatsapp}
+                  mark="WA"
+                />
+              )}
+              <SocialBadge
+                label="Facebook"
+                href={site.social.facebook}
+                logo={logos.facebook}
+                mark="FB"
+              />
+              <SocialBadge
+                label="TikTok"
+                href={site.social.tiktok}
+                logo={logos.tiktok}
+                mark="TT"
+              />
             </div>
           </div>
 

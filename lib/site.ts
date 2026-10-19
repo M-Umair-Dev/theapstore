@@ -4,7 +4,7 @@
  */
 export const site = {
   name: "TheApStore",
-  tagline: "Digital Store",
+  tagline: "Software as Service",
   description:
     "A modern digital store providing digital subscriptions, tools and online services.",
   since: 2020,
@@ -24,10 +24,10 @@ export const site = {
    * exactly as the customer gave it.
    */
   whatsappCountryCode: "92",
+  /** Only these three are shown in the footer. */
   social: {
-    linkedin: "https://linkedin.com",
-    instagram: "https://instagram.com",
-    x: "https://x.com",
+    facebook: "https://facebook.com",
+    tiktok: "https://www.tiktok.com",
   },
   nav: [
     { href: "/", label: "Home" },
