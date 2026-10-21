@@ -601,6 +601,28 @@
   gap: var(--space-2);
 }
 
+/* Duration on/off switch in the Netflix/Prime price grid. */
+.dur-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dur-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* "Shown to customers" next to the plan remove button. */
+.plan-flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .whatsapp-send {
   display: grid;
   gap: var(--space-4);

@@ -12,6 +12,12 @@ export type Plan = {
   price: number;
   note?: string;
   badge?: string;
+  /**
+   * False hides the plan from customers but keeps its price, so the admin can
+   * switch a duration off for a while without losing what it costs.
+   * Omitted means enabled — every plan written before this existed.
+   */
+  enabled?: boolean;
 };
 
 /* ---------- advanced options ----------
@@ -23,6 +29,11 @@ export type OptionChoice = {
   id: string;
   label: string;
   note?: string;
+  /**
+   * False hides this choice from customers while keeping its prices in the
+   * matrix. Omitted means enabled — every choice written before this existed.
+   */
+  enabled?: boolean;
 };
 
 export type OptionGroup = {
@@ -134,6 +145,9 @@ export const categories: Category[] = [
 ];
 
 export const formatPrice = (n: number) => `Rs. ${n.toLocaleString("en-US")}`;
+
+/** A plan or choice is on unless it was explicitly switched off. */
+export const isOn = (item: { enabled?: boolean }) => item.enabled !== false;
 
 export const getCategory = (slug: string) =>
   categories.find((c) => c.slug === slug);

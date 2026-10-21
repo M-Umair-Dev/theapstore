@@ -91,11 +91,38 @@ type Props = {
 
 export default function NetflixEditor({ groups, prices, onChange }: Props) {
   const deviceGroup = groups.find((g) => g.id === DEVICE_GROUP_ID);
+  const durationGroup = groups.find((g) => g.id === DURATION_GROUP_ID);
+
   const [devices, setDevices] = useState<string[]>(
     () =>
       deviceGroup?.choices.map((c) => c.id) ??
       DEVICES.map((d) => d.id),
   );
+
+  const durationOn = (id: string) =>
+    durationGroup?.choices.find((c) => c.id === id)?.enabled !== false;
+
+  /** Switching a duration off keeps every price row for it. */
+  const toggleDuration = (id: string, on: boolean) => {
+    const base = durationGroup ?? {
+      id: DURATION_GROUP_ID,
+      label: "Select Duration",
+      priced: true,
+      choices: DURATIONS,
+    };
+
+    const next = {
+      ...base,
+      choices: base.choices.map((c) =>
+        c.id === id ? { ...c, enabled: on } : c,
+      ),
+    };
+
+    onChange({
+      groups: groups.map((g) => (g.id === DURATION_GROUP_ID ? next : g)),
+      prices,
+    });
+  };
 
   const setDevicesAndEmit = (next: string[]) => {
     setDevices(next);
@@ -144,6 +171,9 @@ export default function NetflixEditor({ groups, prices, onChange }: Props) {
           Every duration and screen combination needs its own price. Nothing is
           calculated automatically. Device counts never affect these prices. The
           device step disappears for Full Account on its own.
+          <br />
+          <strong>Untick a duration</strong> to hide it from customers. Its
+          prices stay here, so you can switch it back on later.
         </p>
 
         <div className="table-wrap">
@@ -159,7 +189,17 @@ export default function NetflixEditor({ groups, prices, onChange }: Props) {
             <tbody>
               {DURATIONS.map((d) => (
                 <tr key={d.id}>
-                  <td className="muted nowrap">{d.label}</td>
+                  <td className="nowrap">
+                    <div className="dur-toggle">
+                      <input
+                        type="checkbox"
+                        checked={durationOn(d.id)}
+                        onChange={(e) => toggleDuration(d.id, e.target.checked)}
+                        aria-label={`Offer ${d.label}`}
+                      />
+                      <span className="muted">{d.label}</span>
+                    </div>
+                  </td>
                   {SCREENS.map((s) => (
                     <td key={s.id}>
                       <input

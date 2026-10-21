@@ -26,6 +26,8 @@ type Row = {
   price: string;
   note: string;
   badge: string;
+  /** False hides the plan from customers but keeps the row and its price. */
+  enabled: boolean;
 };
 
 let rowSeq = 0;
@@ -37,6 +39,7 @@ const newRow = (): Row => ({
   price: "",
   note: "",
   badge: "",
+  enabled: true,
 });
 
 export default function ProductForm({ product }: { product?: Product }) {
@@ -52,6 +55,7 @@ export default function ProductForm({ product }: { product?: Product }) {
           price: String(p.price),
           note: p.note ?? "",
           badge: p.badge ?? "",
+          enabled: p.enabled !== false,
         }))
       : [newRow()],
   );
@@ -372,17 +376,36 @@ export default function ProductForm({ product }: { product?: Product }) {
             <div className="repeat-item" key={row.key}>
               <div className="repeat-head">
                 <span>Plan {index + 1}</span>
-                {rows.length > 1 && (
-                  <button
-                    type="button"
-                    className="link-btn"
-                    onClick={() =>
-                      setRows((prev) => prev.filter((r) => r.key !== row.key))
-                    }
-                  >
-                    Remove
-                  </button>
-                )}
+                <span className="plan-flags">
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      name={`planEnabled.${index}`}
+                      checked={row.enabled}
+                      onChange={(e) =>
+                        setRows((prev) =>
+                          prev.map((r) =>
+                            r.key === row.key
+                              ? { ...r, enabled: e.target.checked }
+                              : r,
+                          ),
+                        )
+                      }
+                    />
+                    Shown to customers
+                  </label>
+                  {rows.length > 1 && (
+                    <button
+                      type="button"
+                      className="link-btn"
+                      onClick={() =>
+                        setRows((prev) => prev.filter((r) => r.key !== row.key))
+                      }
+                    >
+                      Remove
+                    </button>
+                  )}
+                </span>
               </div>
 
               <div className="form-row form-row-3">

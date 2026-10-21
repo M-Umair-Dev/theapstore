@@ -4,14 +4,31 @@
  * and the checkout can all use it.
  */
 import type {
+  OptionChoice,
   OptionGroup,
   PriceRule,
   Product,
   Selection,
 } from "./products.ts";
+import { isOn } from "./products.ts";
 
 export const hasOptions = (p: Product) =>
   Boolean(p.optionGroups?.length && p.prices?.length);
+
+/** Choices the customer may actually pick. Disabled ones keep their price. */
+export const activeChoices = (g: OptionGroup): OptionChoice[] =>
+  g.choices.filter(isOn);
+
+/** Plans the customer may actually pick. */
+export const activePlans = (p: Product) => p.plans.filter(isOn);
+
+/** True only when the choice exists and is switched on. */
+const choiceEnabled = (p: Product, groupId: string, choiceId: string) => {
+  const c = (p.optionGroups ?? [])
+    .find((g) => g.id === groupId)
+    ?.choices.find((x) => x.id === choiceId);
+  return Boolean(c && isOn(c));
+};
 
 /**
  * True when the customer has to choose something before the product can be
@@ -61,7 +78,11 @@ export function defaultSelection(p: Product): Selection {
 
   for (const g of p.optionGroups ?? []) {
     if (g.kind === "multi") continue;
-    selection[g.id] = [cheapest?.values[g.id] ?? g.choices[0]?.id ?? ""];
+    const available = activeChoices(g);
+    const cheapestId = cheapest?.values[g.id];
+    // The cheapest row may point at a choice the admin has since switched off.
+    const valid = available.some((c) => c.id === cheapestId);
+    selection[g.id] = [valid ? cheapestId : available[0]?.id ?? ""];
   }
 
   for (const g of p.optionGroups ?? []) {
@@ -70,7 +91,7 @@ export function defaultSelection(p: Product): Selection {
     // A device group has to be filled to the screen count, or the one-tap Buy
     // Now on the card would produce an order the checkout then rejects.
     const need = g.quantityFrom ? (requiredQuantity(p, selection, g) ?? 0) : 1;
-    const first = g.choices[0]?.id;
+    const first = activeChoices(g)[0]?.id;
     selection[g.id] = first ? Array.from({ length: need }, () => first) : [];
   }
 
@@ -84,7 +105,10 @@ export function defaultSelection(p: Product): Selection {
 export function countsOf(g: OptionGroup, ids: string[]) {
   const counts: Record<string, number> = {};
   for (const id of ids) {
-    if (!g.choices.some((c) => c.id === id)) continue;
+    const c = g.choices.find((x) => x.id === id);
+    // Unknown or switched-off choices are ignored, so a hand-edited cart
+    // cannot count a device the admin disabled.
+    if (!c || !isOn(c)) continue;
     counts[id] = (counts[id] ?? 0) + 1;
   }
   return counts;
@@ -121,8 +145,13 @@ export function isComplete(p: Product, selection: Selection) {
       return totalCount(countsOf(g, picked)) === requiredQuantity(p, selection, g);
     }
 
-    // A multi group needs at least one tick; a select group exactly one.
-    return g.kind === "multi" ? picked.length >= 1 : picked.length === 1;
+    if (g.kind === "multi") return totalCount(countsOf(g, picked)) >= 1;
+
+    // Exactly one answer, and it must still be on sale. This is what stops a
+    // crafted cart from buying a duration the admin has switched off.
+    return (
+      picked.length === 1 && choiceEnabled(p, g.id, picked[0])
+    );
   });
 }
 
@@ -159,9 +188,16 @@ export function priceForChoice(
 /** Lowest price the product can be bought for. Works for both product shapes. */
 export function startingPrice(p: Product) {
   if (!hasOptions(p)) {
-    return p.plans.length ? Math.min(...p.plans.map((plan) => plan.price)) : 0;
+    const prices = activePlans(p).map((plan) => plan.price);
+    return prices.length ? Math.min(...prices) : 0;
   }
-  return Math.min(...(p.prices ?? []).map((rule) => rule.price));
+
+  // Only combinations whose every choice is still on sale can be quoted.
+  const usable = (p.prices ?? []).filter((rule) =>
+    pricedGroups(p).every((g) => choiceEnabled(p, g.id, rule.values[g.id] ?? "")),
+  );
+  const pool = usable.length ? usable : (p.prices ?? []);
+  return pool.length ? Math.min(...pool.map((rule) => rule.price)) : 0;
 }
 
 /** Stable id for the cart, unique per full selection. */
@@ -255,7 +291,19 @@ export type CartLineInput = {
 /** Turns a selection into a cart line. Handles both product shapes. */
 export function lineFor(p: Product, selection: Selection): CartLineInput {
   if (!hasOptions(p)) {
-    const plan = p.plans[0];
+    const plan = activePlans(p)[0];
+    // Every plan switched off — nothing to price. The caller's buttons are
+    // already disabled in that case.
+    if (!plan) {
+      return {
+        slug: p.slug,
+        planId: "",
+        title: p.title,
+        planName: "",
+        meta: "",
+        price: 0,
+      };
+    }
     return {
       slug: p.slug,
       planId: plan.id,

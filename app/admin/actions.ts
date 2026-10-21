@@ -85,6 +85,8 @@ function parsePlans(fd: FormData): Plan[] {
       name: clean,
       meta: lines(metas[i] ?? ""),
       price: Math.round(price),
+      // Named per row so an unticked box is distinguishable from a missing one.
+      enabled: fd.get(`planEnabled.${i}`) === "on",
       ...(notes[i]?.trim() ? { note: notes[i].trim() } : {}),
       ...(badges[i]?.trim() ? { badge: badges[i].trim() } : {}),
     });
@@ -133,7 +135,15 @@ function parseOptions(raw: string): {
         return { error: `Every choice in "${label}" needs a label.` };
       }
       const note = String(c.note ?? "").trim();
-      choices.push({ id: cid, label: clabel, ...(note ? { note } : {}) });
+      // Omitted means enabled, so an older payload without the flag keeps all
+      // its choices on sale.
+      const enabled = c.enabled !== false;
+      choices.push({
+        id: cid,
+        label: clabel,
+        enabled,
+        ...(note ? { note } : {}),
+      });
     }
     if (choices.length === 0) {
       return { error: `"${label}" needs at least one choice.` };

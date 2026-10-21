@@ -6,6 +6,8 @@ import { useState } from "react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useCart } from "@/lib/cart";
 import {
+  activeChoices,
+  activePlans,
   countsOf,
   defaultSelection,
   describeSelection,
@@ -54,10 +56,16 @@ export default function ProductDetail({
   });
   const [added, setAdded] = useState(false);
 
-  const soldOut = product.comingSoon;
-
   /* ---- simple products ---- */
-  const plan = product.plans.find((p) => p.id === planId) ?? product.plans[0];
+  // Only the plans the admin left switched on, so a disabled duration never
+  // appears and its price stays in the product for later.
+  const plans = activePlans(product);
+  const plan = plans.find((p) => p.id === planId) ?? plans[0];
+  // Every duration switched off: nothing left to sell, so the buy buttons go
+  // away rather than the page crashing on a missing plan.
+  const nothingToSell = !advanced && !plan;
+
+  const soldOut = Boolean(product.comingSoon) || nothingToSell;
 
   /* ---- option products ---- */
   const complete = !advanced || isComplete(product, selection);
@@ -72,14 +80,14 @@ export default function ProductDetail({
     ? lineFor(product, selection)
     : {
         slug: product.slug,
-        planId: plan.id,
+        planId: plan?.id ?? "",
         title: product.title,
-        planName: plan.name,
-        meta: plan.meta.join(" • "),
-        price: plan.price,
+        planName: plan?.name ?? "",
+        meta: plan ? plan.meta.join(" • ") : "",
+        price: plan?.price ?? 0,
       };
 
-  const price = advanced ? priceFor(product, selection) : plan.price;
+  const price = advanced ? priceFor(product, selection) : (plan?.price ?? 0);
   const whatsapp = waLink(cartMessage([{ ...line, qty: 1 }], price));
 
   /** Picks one value, then drops any group its hideWhen rule just hid. A new
@@ -212,7 +220,7 @@ export default function ProductDetail({
 
                       return (
                         <div className="qty-list">
-                          {g.choices.map((c) => (
+                          {activeChoices(g).map((c) => (
                             <div className="qty-row" key={c.id}>
                               <span className="qty-label">{c.label}</span>
                               <div className="qty-control">
@@ -252,7 +260,7 @@ export default function ProductDetail({
                     })()
                   ) : (
                     <div className="check-list">
-                      {g.choices.map((c) => (
+                      {activeChoices(g).map((c) => (
                         <label className="check" key={c.id}>
                           <input
                             type="checkbox"
@@ -275,7 +283,7 @@ export default function ProductDetail({
                     role="radiogroup"
                     aria-label={g.label}
                   >
-                    {g.choices.map((c) => {
+                    {activeChoices(g).map((c) => {
                       const selected = selection[g.id]?.[0] === c.id;
                       // A priced group shows the admin's figure for this choice
                       // once the other priced groups are answered. Duration is
@@ -327,7 +335,7 @@ export default function ProductDetail({
               role="radiogroup"
               aria-label="Choose a plan"
             >
-              {product.plans.map((p) => (
+              {plans.map((p) => (
                 <button
                   type="button"
                   key={p.id}
@@ -383,11 +391,11 @@ export default function ProductDetail({
           <>
             <div className="summary-row">
               <span>Plan</span>
-              <strong>{plan.name}</strong>
+              <strong>{plan?.name ?? "—"}</strong>
             </div>
             <div className="summary-row">
               <span>Includes</span>
-              <span>{plan.meta.join(" • ")}</span>
+              <span>{plan?.meta.join(" • ") ?? "—"}</span>
             </div>
           </>
         )}

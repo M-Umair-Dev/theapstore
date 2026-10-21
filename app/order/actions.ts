@@ -8,6 +8,7 @@ import {
   type OrderItem,
 } from "@/lib/repo";
 import {
+  activePlans,
   describeSelection,
   hasOptions,
   isComplete,
@@ -90,7 +91,8 @@ async function priceCart(raw: string): Promise<OrderItem[] | string> {
       continue;
     }
 
-    const plan = product.plans.find((p) => p.id === planId);
+    // Disabled plans are rejected here, not just hidden on the product page.
+    const plan = activePlans(product).find((p) => p.id === planId);
     if (!plan) return `That plan for "${product.title}" is no longer available.`;
 
     items.push({
