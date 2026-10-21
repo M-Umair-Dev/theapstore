@@ -227,7 +227,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  margin-left: auto;
+  /* Leading space is owned by .header-inner's space-between, not by this
+     element — otherwise hiding the nav on mobile leaves the icon row stranded
+     against the logo with an empty strip on the right. */
 }
 
 .nav-link {
@@ -441,6 +443,57 @@
   border-radius: var(--radius);
   color: var(--black);
   transition: color var(--transition);
+}
+
+/* Header icon button. Same 40px tap target as the cart and menu. */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--black);
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.icon-btn:hover {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+/* Search lives behind this icon below the tablet breakpoint. */
+.mobile-search-toggle {
+  display: none;
+}
+
+/* Full-width panel under the header. The header is sticky, so `top: 100%`
+   lands directly beneath it and nothing can clip it. */
+.mobile-search-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.mobile-search-panel .search-box {
+  flex: 1;
+  max-width: none;
 }
 
 .cart-link:hover {
@@ -2101,6 +2154,16 @@
   .search-box {
     max-width: 190px;
   }
+
+  /* Below tablet the header search becomes an icon; the full field would eat
+     most of a phone's width. The shop page keeps its own search field. */
+  .header-actions > .search-box {
+    display: none;
+  }
+
+  .mobile-search-toggle {
+    display: grid;
+  }
 }
 
 @media (max-width: 620px) {
@@ -2175,20 +2238,108 @@
   max-width: 100%;
 }
 
-/* 320–430px: the tagline is the first thing to go. Keeping it would leave the
-   search field too narrow to type in. */
+/* ---------- Product page: secondary sections ---------- */
+
+/* Four open blocks between the buy buttons and the footer made the page very
+   long on a phone. They collapse now; nothing was removed. */
+.pd-fold {
+  border-top: 1px solid var(--border);
+}
+
+.pd-fold > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+}
+
+.pd-fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pd-fold > summary::after {
+  content: "+";
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--primary);
+}
+
+.pd-fold[open] > summary::after {
+  content: "−";
+}
+
+.pd-fold > summary.block-title {
+  margin-top: var(--space-5);
+}
+
+.pd-fold[open] > summary.block-title {
+  margin-bottom: var(--space-2);
+}
+
+/* Phones: tighten the product page so the price, options and buy buttons sit
+   closer to the top, and shorten the image block. */
+@media (max-width: 620px) {
+  .pd-layout {
+    gap: var(--space-5);
+    padding-block: var(--space-5) var(--space-7);
+  }
+
+  .pd-media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .pd-title {
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  .block-title {
+    margin-top: var(--space-5);
+  }
+
+  .summary-card {
+    padding: var(--space-4);
+  }
+}
+
+/* 320–430px: only the header bar gets tighter. The store name and tagline stay
+   visible — they are the brand, not decoration — and the search field has
+   already moved behind its icon. */
 @media (max-width: 430px) {
-  .logo-sub {
-    display: none;
+  .header-inner {
+    gap: var(--space-2);
+  }
+
+  .header-actions {
+    gap: var(--space-1);
+  }
+
+  .logo {
+    gap: var(--space-2);
   }
 
   .logo-art {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
   }
 
-  .header-inner {
-    gap: var(--space-3);
+  .logo-name {
+    font-size: 15px;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+
+  .icon-btn,
+  .cart-link,
+  .menu-toggle {
+    width: 34px;
+    height: 34px;
   }
 }
 

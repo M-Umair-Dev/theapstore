@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
 import Logo from "@/components/Logo";
+import MobileSearch from "@/components/MobileSearch";
 import SearchBox from "@/components/SearchBox";
 import { site } from "@/lib/site";
 
@@ -46,6 +47,7 @@ export default function Header() {
 
           <div className="header-actions">
             <SearchBox />
+            <MobileSearch />
             <Link href="/shop" className="btn btn-primary btn-sm">
               Shop Now
             </Link>

@@ -77,44 +77,60 @@ export default async function ProductPage({
       />
 
       <ProductDetail product={product} isAdmin={isAdmin}>
-        <h2 className="block-title">Key features</h2>
-        <ul className="spec-list">
-          {product.specs.map((spec) => (
-            <li key={spec}>{spec}</li>
-          ))}
-        </ul>
+        {/* Secondary information sits in collapsed sections. The page used to
+            put four open blocks between the buy buttons and the end, which is
+            several screens of scrolling on a phone. Nothing is removed. */}
+        <details className="pd-fold">
+          <summary className="block-title">Key features</summary>
+          <ul className="spec-list">
+            {product.specs.map((spec) => (
+              <li key={spec}>{spec}</li>
+            ))}
+          </ul>
+        </details>
 
-        <h2 className="block-title">Delivery</h2>
-        <p className="pd-summary">
-          Pick a plan, then complete the order on the site and upload your
-          payment proof. We verify it and deliver your access. Most orders
-          placed during business hours arrive within the hour.
-        </p>
+        <details className="pd-fold">
+          <summary className="block-title">Delivery</summary>
+          <p className="pd-summary">
+            Pick a plan, then complete the order on the site and upload your
+            payment proof. We verify it and deliver your access. Most orders
+            placed during business hours arrive within the hour.
+          </p>
+        </details>
 
-        <h2 className="block-title">Important access and account guidelines</h2>
-        <ul className="includes-list">
-          {guidelines.map((rule) => (
-            <li key={rule}>{rule}</li>
-          ))}
-        </ul>
+        <details className="pd-fold">
+          <summary className="block-title">
+            Important access and account guidelines
+          </summary>
+          <ul className="includes-list">
+            {guidelines.map((rule) => (
+              <li key={rule}>{rule}</li>
+            ))}
+          </ul>
+        </details>
 
-        <h2 className="block-title">Frequently asked questions</h2>
-        <div
-          style={{
-            display: "grid",
-            gap: "var(--space-5)",
-            marginTop: "var(--space-4)",
-          }}
-        >
-          {faqs.map((f) => (
-            <div key={f.q}>
-              <h3 style={{ fontSize: 16 }}>{f.q}</h3>
-              <p className="pd-summary" style={{ marginTop: "var(--space-2)" }}>
-                {f.a}
-              </p>
-            </div>
-          ))}
-        </div>
+        <details className="pd-fold">
+          <summary className="block-title">Frequently asked questions</summary>
+          <div
+            style={{
+              display: "grid",
+              gap: "var(--space-5)",
+              marginTop: "var(--space-4)",
+            }}
+          >
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <h3 style={{ fontSize: 16 }}>{f.q}</h3>
+                <p
+                  className="pd-summary"
+                  style={{ marginTop: "var(--space-2)" }}
+                >
+                  {f.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </details>
       </ProductDetail>
 
       {related.length > 0 && (
