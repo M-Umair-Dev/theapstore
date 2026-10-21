@@ -168,7 +168,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-shrink: 0;
+  /* Was flex-shrink: 0, which is what pushed the header row past the viewport
+     on a 320px phone. The mark itself still cannot shrink. */
+  min-width: 0;
 }
 
 /* The brand mark. White plate so the same artwork works on the white header
@@ -198,6 +200,15 @@
   font-weight: 800;
   color: var(--black);
   letter-spacing: -0.01em;
+  /* The brand text is the flexible half of the logo: it truncates rather than
+     pushing the header wider than a 320px screen. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logo > span:last-child {
+  min-width: 0;
 }
 
 .logo-sub {
@@ -207,6 +218,9 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav {
@@ -244,7 +258,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  flex-shrink: 0;
+  /* Allowed to shrink. With flex-shrink: 0 the row could not fit at 320px and
+     the page scrolled sideways. */
+  min-width: 0;
 }
 
 /* ---------- Product search ---------- */
@@ -252,6 +268,9 @@
 .search-box {
   position: relative;
   max-width: 240px;
+  /* A flex item defaults to min-width: auto, which refuses to shrink below its
+     content and pushes the header wider than the screen. */
+  min-width: 0;
 }
 
 .search-form {
@@ -2134,6 +2153,42 @@
 
   .container {
     padding-inline: var(--space-4);
+  }
+}
+
+/* ---------- Long content ---------- */
+
+/* Names, references and emails are admin-entered, so any of them can be one
+   unbroken string. Without this a single long product name widens the page. */
+.pd-title,
+.card-title,
+.cart-title,
+.cat-name,
+.cat-desc,
+.search-hit-name,
+.receipt-modal-head {
+  overflow-wrap: anywhere;
+}
+
+/* Never let an image or a table stretch its container. */
+.table-wrap {
+  max-width: 100%;
+}
+
+/* 320–430px: the tagline is the first thing to go. Keeping it would leave the
+   search field too narrow to type in. */
+@media (max-width: 430px) {
+  .logo-sub {
+    display: none;
+  }
+
+  .logo-art {
+    width: 38px;
+    height: 38px;
+  }
+
+  .header-inner {
+    gap: var(--space-3);
   }
 }
 
