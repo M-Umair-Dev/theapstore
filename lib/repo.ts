@@ -120,12 +120,22 @@ export type ProductImage = {
   updatedAt: Date;
 };
 
+/** Cart and homepage-hero art. Same document shape as a product image, stored
+ *  in `thumbnails` so it never shares a key with `images`. */
+export type ProductThumbnail = {
+  slug: string;
+  contentType: string;
+  data: string;
+  updatedAt: Date;
+};
+
 /* ---------------- collections ---------------- */
 
 const products = () => getDb().collection<ProductDoc>("products");
 const orders = () => getDb().collection<Order>("orders");
 const users = () => getDb().collection<AppUser>("users");
 const images = () => getDb().collection<ProductImage>("images");
+const thumbnails = () => getDb().collection<ProductThumbnail>("thumbnails");
 const receipts = () => getDb().collection<OrderReceipt>("receipts");
 
 let indexesReady: Promise<void> | null = null;
@@ -140,6 +150,7 @@ function ensureIndexes() {
     orders().createIndex({ createdAt: -1 }),
     users().createIndex({ email: 1 }, { unique: true }),
     images().createIndex({ slug: 1 }, { unique: true }),
+    thumbnails().createIndex({ slug: 1 }, { unique: true }),
     receipts().createIndex({ reference: 1 }, { unique: true }),
   ]).then(() => undefined);
   return indexesReady;
@@ -180,7 +191,10 @@ export async function countProducts(): Promise<number> {
 
 export async function upsertProduct(
   product: Product,
-  { originalSlug }: { originalSlug?: string } = {},
+  {
+    originalSlug,
+    unset = [],
+  }: { originalSlug?: string; unset?: string[] } = {},
 ) {
   await ensureIndexes();
   const now = new Date();
@@ -196,7 +210,13 @@ export async function upsertProduct(
 
   await products().updateOne(
     { slug: key },
-    { $set: set, $setOnInsert: { createdAt: now } },
+    {
+      $set: set,
+      $setOnInsert: { createdAt: now },
+      ...(unset.length > 0
+        ? { $unset: Object.fromEntries(unset.map((field) => [field, ""])) }
+        : {}),
+    },
     { upsert: true },
   );
 }
@@ -206,6 +226,7 @@ export async function deleteProduct(slug: string) {
   await Promise.all([
     products().deleteOne({ slug }),
     images().deleteOne({ slug }),
+    thumbnails().deleteOne({ slug }),
   ]);
 }
 
@@ -238,6 +259,37 @@ export async function renameProductImage(from: string, to: string) {
 export async function deleteProductImage(slug: string) {
   await ensureIndexes();
   await images().deleteOne({ slug });
+}
+
+/* ---------------- cart / hero thumbnails ---------------- */
+
+export async function saveProductThumbnail(
+  slug: string,
+  contentType: string,
+  base64: string,
+) {
+  await ensureIndexes();
+  await thumbnails().updateOne(
+    { slug },
+    { $set: { slug, contentType, data: base64, updatedAt: new Date() } },
+    { upsert: true },
+  );
+}
+
+export async function getProductThumbnail(slug: string) {
+  await ensureIndexes();
+  return thumbnails().findOne({ slug });
+}
+
+/** Keeps an existing thumbnail attached when a product is renamed. */
+export async function renameProductThumbnail(from: string, to: string) {
+  await ensureIndexes();
+  await thumbnails().updateOne({ slug: from }, { $set: { slug: to } });
+}
+
+export async function deleteProductThumbnail(slug: string) {
+  await ensureIndexes();
+  await thumbnails().deleteOne({ slug });
 }
 
 /* ---------------- orders ---------------- */

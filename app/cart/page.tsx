@@ -12,6 +12,33 @@ import { formatPrice } from "@/lib/products";
 import { cartMessage, waLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
+function CartThumb({
+  slug,
+  title,
+  hasThumbnail,
+}: {
+  slug: string;
+  title: string;
+  hasThumbnail?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <div className="cart-thumb" aria-hidden="true">
+      {hasThumbnail === true && !failed ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/api/thumbnail/${slug}`}
+          alt=""
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        title.charAt(0)
+      )}
+    </div>
+  );
+}
+
 export default function CartPage() {
   const { lines, ready, setQty, remove } = useCart();
   const total = lines.reduce((sum, l) => sum + l.price * l.qty, 0);
@@ -52,9 +79,11 @@ export default function CartPage() {
                   className="cart-line"
                   key={`${item.slug}-${item.planId}`}
                 >
-                  <div className="cart-thumb" aria-hidden="true">
-                    {item.title.charAt(0)}
-                  </div>
+                  <CartThumb
+                    slug={item.slug}
+                    title={item.title}
+                    hasThumbnail={item.hasThumbnail}
+                  />
 
                   <div>
                     <Link

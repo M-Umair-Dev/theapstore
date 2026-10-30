@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { saveProductAction, type ActionState } from "@/app/admin/actions";
 import NetflixEditor, {
   ALL_DEVICE_IDS,
@@ -17,6 +17,101 @@ import {
 } from "@/lib/products";
 
 const initial: ActionState = {};
+
+const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/gif";
+
+/** Local preview of a thumbnail chosen but not yet saved. */
+function ThumbnailPreview({ product }: { product?: Product }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [remove, setRemove] = useState(false);
+  const saved = Boolean(product?.cartHeroThumbnailContentType);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  const showSaved = saved && !previewUrl && !remove;
+  const showFile = Boolean(previewUrl);
+
+  return (
+    <div className="admin-panel">
+      <h2>Cart / Hero Thumbnail Image</h2>
+      <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
+        JPEG, PNG, WebP, AVIF or GIF, up to 4 MB. Used in the cart and on the
+        home page banner. The product image above is left as it is. Without a
+        thumbnail the cart shows a letter tile.
+      </p>
+
+      {product && (
+        <input
+          type="hidden"
+          name="currentThumbnailType"
+          value={product.cartHeroThumbnailContentType ?? ""}
+        />
+      )}
+
+      {(showSaved || showFile) && (
+        <div className="image-preview">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={previewUrl ?? `/api/thumbnail/${product?.slug ?? ""}`}
+            alt=""
+          />
+        </div>
+      )}
+
+      {remove && !previewUrl && (
+        <p className="hint" style={{ marginBottom: "var(--space-4)" }}>
+          This thumbnail will be removed when you save. The product image stays.
+        </p>
+      )}
+
+      {saved && (
+        <label className="check">
+          <input
+            type="checkbox"
+            name="removeThumbnail"
+            checked={remove}
+            onChange={(e) => {
+              setRemove(e.target.checked);
+              if (e.target.checked) {
+                if (fileRef.current) fileRef.current.value = "";
+                setPreviewUrl(null);
+              }
+            }}
+          />
+          Remove the current thumbnail
+        </label>
+      )}
+
+      <div className="field" style={{ marginTop: "var(--space-4)" }}>
+        <label className="label" htmlFor="thumbnail">
+          Cart / Hero Thumbnail Image
+        </label>
+        <input
+          id="thumbnail"
+          name="thumbnail"
+          type="file"
+          accept={IMAGE_ACCEPT}
+          className="input"
+          ref={fileRef}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) {
+              setPreviewUrl(null);
+              return;
+            }
+            setRemove(false);
+            setPreviewUrl(URL.createObjectURL(file));
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 type Row = {
   key: string;
@@ -295,6 +390,8 @@ export default function ProductForm({ product }: { product?: Product }) {
           />
         </div>
       </div>
+
+      <ThumbnailPreview product={product} />
 
       <div className="admin-panel">
         <h2>Product Type</h2>

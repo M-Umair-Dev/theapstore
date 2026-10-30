@@ -85,6 +85,7 @@ export default function ProductDetail({
         planName: plan?.name ?? "",
         meta: plan ? plan.meta.join(" • ") : "",
         price: plan?.price ?? 0,
+        ...(product.cartHeroThumbnailContentType ? { hasThumbnail: true } : {}),
       };
 
   const price = advanced ? priceFor(product, selection) : (plan?.price ?? 0);

@@ -24,6 +24,11 @@ export type CartLine = {
   meta: string;
   price: number;
   qty: number;
+  /**
+   * True when the product had a cart/hero thumbnail at the moment the line was
+   * added. Omitted on lines stored before that field existed.
+   */
+  hasThumbnail?: boolean;
 };
 
 export type NewLine = Omit<CartLine, "qty">;
@@ -73,7 +78,14 @@ function readStoredCart(raw: string | null): CartLine[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isCartLine) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isCartLine).map((line) => {
+      if (line.hasThumbnail === true) return line;
+      if (line.hasThumbnail === undefined) return line;
+      const next = { ...line };
+      delete next.hasThumbnail;
+      return next;
+    });
   } catch {
     return [];
   }
@@ -110,7 +122,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       );
       if (at === -1) return [...prev, { ...line, qty }];
       const next = [...prev];
-      next[at] = { ...next[at], qty: next[at].qty + qty };
+      const current = next[at];
+      const merged: CartLine = { ...current, qty: current.qty + qty };
+      if (line.hasThumbnail === true) merged.hasThumbnail = true;
+      else delete merged.hasThumbnail;
+      next[at] = merged;
       return next;
     });
   }, []);

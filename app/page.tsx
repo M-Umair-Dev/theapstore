@@ -105,6 +105,14 @@ export default async function Home() {
           </div>
 
           <Link href={`/product/${promo.slug}`} className="promo-tile">
+            {promo.cartHeroThumbnailContentType ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className="promo-thumb"
+                src={`/api/thumbnail/${promo.slug}`}
+                alt=""
+              />
+            ) : null}
             <span className="badge badge-primary">
               {promo.badges[0] ?? "Featured"}
             </span>

@@ -623,6 +623,16 @@
   transform: translateY(-3px);
 }
 
+.promo-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: var(--space-4);
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: #111111;
+}
+
 .promo-tile h3 {
   color: var(--white);
   font-size: 24px;
@@ -1734,13 +1744,21 @@
 .cart-thumb {
   display: grid;
   place-items: center;
-  width: 84px;
+  width: 100%;
+  max-width: 84px;
   height: 64px;
+  overflow: hidden;
   border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
   font-weight: 800;
   color: var(--border);
+}
+
+.cart-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .cart-title {
@@ -2212,6 +2230,11 @@
   .cart-line {
     grid-template-columns: 64px minmax(0, 1fr);
     row-gap: var(--space-4);
+  }
+
+  .cart-thumb {
+    max-width: 64px;
+    height: 48px;
   }
 
   .cart-subtotal {

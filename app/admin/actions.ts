@@ -19,14 +19,17 @@ import {
   deleteOrder,
   deleteProduct,
   deleteProductImage,
+  deleteProductThumbnail,
   deleteUser,
   findUserByEmail,
   getOrder,
   markFulfilled,
   orderStatuses,
   renameProductImage,
+  renameProductThumbnail,
   savePaymentSettings,
   saveProductImage,
+  saveProductThumbnail,
   updateOrderStatus,
   upsertProduct,
   type OrderStatus,
@@ -338,7 +341,11 @@ export async function saveProductAction(
   const image = await readImageField(fd, "image");
   if (!image.ok && !image.empty) return { error: image.error };
 
+  const thumbnail = await readImageField(fd, "thumbnail");
+  if (!thumbnail.ok && !thumbnail.empty) return { error: thumbnail.error };
+
   const removeImage = fd.get("removeImage") === "on";
+  const removeThumbnail = fd.get("removeThumbnail") === "on";
 
   // Carry the current image across an edit that doesn't replace it.
   if (image.ok) product.imageContentType = image.contentType;
@@ -347,13 +354,25 @@ export async function saveProductAction(
     if (existing) product.imageContentType = existing;
   }
 
+  // Thumbnail is independent: a product-image upload or removal must not
+  // clear it, and a thumbnail upload or removal must not clear the product image.
+  const dropThumbnail = !thumbnail.ok && removeThumbnail;
+  if (thumbnail.ok) product.cartHeroThumbnailContentType = thumbnail.contentType;
+  else if (!removeThumbnail) {
+    const existingThumb = str(fd, "currentThumbnailType");
+    if (existingThumb) product.cartHeroThumbnailContentType = existingThumb;
+  }
+
   const originalSlug = str(fd, "originalSlug") || undefined;
   const renamed = originalSlug !== undefined && originalSlug !== product.slug;
 
   try {
     // Keyed on the original slug, so renaming updates the existing document
     // instead of leaving the old one behind.
-    await upsertProduct(product, { originalSlug });
+    await upsertProduct(product, {
+      originalSlug,
+      ...(dropThumbnail ? { unset: ["cartHeroThumbnailContentType"] } : {}),
+    });
 
     if (image.ok) {
       await saveProductImage(product.slug, image.contentType, image.base64);
@@ -361,6 +380,20 @@ export async function saveProductAction(
       await deleteProductImage(product.slug);
     } else if (renamed && originalSlug) {
       await renameProductImage(originalSlug, product.slug);
+    }
+
+    if (thumbnail.ok) {
+      await saveProductThumbnail(
+        product.slug,
+        thumbnail.contentType,
+        thumbnail.base64,
+      );
+      if (renamed && originalSlug) await deleteProductThumbnail(originalSlug);
+    } else if (removeThumbnail) {
+      await deleteProductThumbnail(product.slug);
+      if (renamed && originalSlug) await deleteProductThumbnail(originalSlug);
+    } else if (renamed && originalSlug) {
+      await renameProductThumbnail(originalSlug, product.slug);
     }
   } catch (e) {
     return {

@@ -286,7 +286,12 @@ export type CartLineInput = {
   planName: string;
   meta: string;
   price: number;
+  /** Set only from the cart/hero thumbnail, never from the product image. */
+  hasThumbnail?: boolean;
 };
+
+const thumbnailFlag = (p: Product): { hasThumbnail: true } | Record<string, never> =>
+  p.cartHeroThumbnailContentType ? { hasThumbnail: true } : {};
 
 /** Turns a selection into a cart line. Handles both product shapes. */
 export function lineFor(p: Product, selection: Selection): CartLineInput {
@@ -302,6 +307,7 @@ export function lineFor(p: Product, selection: Selection): CartLineInput {
         planName: "",
         meta: "",
         price: 0,
+        ...thumbnailFlag(p),
       };
     }
     return {
@@ -311,6 +317,7 @@ export function lineFor(p: Product, selection: Selection): CartLineInput {
       planName: plan.name,
       meta: plan.meta.join(" • "),
       price: plan.price,
+      ...thumbnailFlag(p),
     };
   }
 
@@ -322,6 +329,7 @@ export function lineFor(p: Product, selection: Selection): CartLineInput {
     planName,
     meta,
     price: priceFor(p, selection),
+    ...thumbnailFlag(p),
   };
 }
 

@@ -95,6 +95,11 @@ export type Product = {
   productType?: ProductType;
   /** MIME type of the uploaded image. Absent means fall back to the letter tile. */
   imageContentType?: string;
+  /**
+   * MIME type of the cart and homepage-hero thumbnail. Absent means no
+   * thumbnail. Bytes live in the `thumbnails` collection, not `images`.
+   */
+  cartHeroThumbnailContentType?: string;
   featured?: boolean;
   comingSoon?: boolean;
 };
