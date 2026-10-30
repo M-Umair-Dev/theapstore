@@ -2118,6 +2118,10 @@
     display: none;
   }
 
+  .header-inner {
+    justify-content: space-between;
+  }
+
   .menu-toggle {
     display: grid;
     place-items: center;
