@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import ProductDetail from "@/components/ProductDetail";
+import ProductFolds from "@/components/ProductFolds";
 import { getCategoryName } from "@/lib/products";
 import { getProductBySlug, productsInCategory } from "@/lib/repo";
 
@@ -80,7 +81,8 @@ export default async function ProductPage({
         {/* Secondary information sits in collapsed sections. The page used to
             put four open blocks between the buy buttons and the end, which is
             several screens of scrolling on a phone. Nothing is removed. */}
-        <details className="pd-fold">
+        <ProductFolds resetKey={slug}>
+        <details className="pd-fold" open>
           <summary className="block-title">Key features</summary>
           <ul className="spec-list">
             {product.specs.map((spec) => (
@@ -131,6 +133,7 @@ export default async function ProductPage({
             ))}
           </div>
         </details>
+        </ProductFolds>
       </ProductDetail>
 
       {related.length > 0 && (
