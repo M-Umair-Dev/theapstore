@@ -57,7 +57,7 @@ export default function OrderPage() {
     return (
       <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
         <div className="empty-state">
-          <h2>Order received</h2>
+          <h2>Your Order Has Been Placed Successfully</h2>
           <p>
             Your reference is <strong>{state.reference}</strong>. We verify your
             payment and send your access details by{" "}
@@ -66,13 +66,13 @@ export default function OrderPage() {
           </p>
           <div className="hero-actions" style={{ justifyContent: "center" }}>
             <Link href="/shop" className="btn btn-primary">
-              Continue shopping
+              Continue Shopping
             </Link>
             <Link
               href={`/track?reference=${encodeURIComponent(state.reference)}`}
               className="btn btn-secondary"
             >
-              Track this order
+              Track This Order
             </Link>
             {followUp && (
               <a
@@ -82,7 +82,7 @@ export default function OrderPage() {
                 className="btn btn-whatsapp"
               >
                 <WhatsAppIcon />
-                Chase it on WhatsApp
+                Follow Up on WhatsApp
               </a>
             )}
           </div>
@@ -95,10 +95,10 @@ export default function OrderPage() {
     return (
       <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
         <div className="empty-state">
-          <h2>Nothing to order yet</h2>
+          <h2>Nothing to Order Yet</h2>
           <p>Your cart is empty. Add a plan and it will show up here.</p>
           <Link href="/shop" className="btn btn-primary">
-            Browse the shop
+            Browse the Shop
           </Link>
         </div>
       </div>
@@ -108,10 +108,10 @@ export default function OrderPage() {
   return (
     <>
       <div className="container" style={{ paddingTop: "var(--space-6)" }}>
-        <h1 className="section-title">Place your order</h1>
+        <h1 className="section-title">Checkout</h1>
         <p className="section-lead">
-          Fastest route is WhatsApp — one tap sends us your whole cart. Or fill
-          the form in and we will verify your payment from here.
+          The fastest way is WhatsApp — one tap sends us your whole cart. Or
+          fill in the form and we will verify your payment from here.
         </p>
       </div>
 
@@ -131,7 +131,7 @@ export default function OrderPage() {
                 className="btn btn-whatsapp"
               >
                 <WhatsAppIcon />
-                Send cart on WhatsApp
+                Send Cart on WhatsApp
               </a>
             </div>
           )}
@@ -152,7 +152,7 @@ export default function OrderPage() {
             <div className="form-grid">
               <div className="field">
                 <label className="label" htmlFor="name">
-                  Full name
+                  Full Name
                 </label>
                 <input id="name" name="name" className="input" required />
               </div>
@@ -174,7 +174,7 @@ export default function OrderPage() {
 
               <div className="field">
                 <label className="label" htmlFor="phone">
-                  Phone / WhatsApp number
+                  Phone / WhatsApp Number
                 </label>
                 <input
                   id="phone"
@@ -233,7 +233,7 @@ export default function OrderPage() {
 
               <div className="field field-full">
                 <label className="label" htmlFor="receipt">
-                  Payment screenshot
+                  Payment Screenshot
                 </label>
                 <input
                   id="receipt"
@@ -251,7 +251,7 @@ export default function OrderPage() {
 
               <div className="field field-full">
                 <label className="label" htmlFor="notes">
-                  Notes (optional)
+                  Notes (Optional)
                 </label>
                 <textarea
                   id="notes"
@@ -275,7 +275,7 @@ export default function OrderPage() {
 
             <div style={{ marginTop: "var(--space-7)" }}>
               <h2 className="block-title" style={{ marginTop: 0 }}>
-                What happens next
+                What Happens Next
               </h2>
               <ul className="spec-list">
                 <li>We verify your payment against the proof you send.</li>
@@ -295,7 +295,7 @@ export default function OrderPage() {
 
         <aside className="summary-card">
           <h2 style={{ fontSize: 16, marginBottom: "var(--space-3)" }}>
-            Order summary
+            Order Summary
           </h2>
 
           {lines.map((item) => (

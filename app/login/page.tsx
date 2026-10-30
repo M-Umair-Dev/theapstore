@@ -8,7 +8,7 @@ import "../admin.css";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Admin sign in",
+  title: "Admin Sign In",
   robots: { index: false, follow: false },
 };
 
@@ -25,7 +25,7 @@ export default async function LoginPage({
     <div className="admin-auth">
       <div className="admin-auth-card">
         <span className="eyebrow">{site.name}</span>
-        <h1 style={{ fontSize: 24, fontWeight: 800 }}>Admin sign in</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 800 }}>Admin Sign In</h1>
         <p className="auth-lead">
           Staff access only. Customers can order without an account.
         </p>

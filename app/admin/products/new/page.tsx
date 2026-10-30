@@ -7,8 +7,8 @@ export default function NewProductPage() {
     <>
       <div className="admin-head">
         <div>
-          <h1>Add product</h1>
-          <p>Create a new item in the catalogue.</p>
+          <h1>Add Product</h1>
+          <p>Create a new item in the catalog.</p>
         </div>
       </div>
 

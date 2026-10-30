@@ -55,13 +55,13 @@ export function buildGroups(deviceIds: string[]): OptionGroup[] {
   const groups: OptionGroup[] = [
     {
       id: DURATION_GROUP_ID,
-      label: "Select Duration",
+      label: "Select Your Duration",
       priced: true,
       choices: DURATIONS,
     },
     {
       id: SCREENS_GROUP_ID,
-      label: "Select Screen",
+      label: "Select Your Screen",
       priced: true,
       choices: SCREENS,
     },
@@ -72,7 +72,7 @@ export function buildGroups(deviceIds: string[]): OptionGroup[] {
   if (deviceIds.length > 0) {
     groups.push({
       id: DEVICE_GROUP_ID,
-      label: "Select Devices",
+      label: "Select Your Devices",
       kind: "multi",
       hideWhen: { groupId: SCREENS_GROUP_ID, choiceIds: ["full"] },
       quantityFrom: { groupId: SCREENS_GROUP_ID, perChoice: PER_SCREEN },
@@ -106,7 +106,7 @@ export default function NetflixEditor({ groups, prices, onChange }: Props) {
   const toggleDuration = (id: string, on: boolean) => {
     const base = durationGroup ?? {
       id: DURATION_GROUP_ID,
-      label: "Select Duration",
+      label: "Select Your Duration",
       priced: true,
       choices: DURATIONS,
     };
@@ -166,13 +166,13 @@ export default function NetflixEditor({ groups, prices, onChange }: Props) {
   return (
     <>
       <div className="admin-panel">
-        <h2>Netflix / Prime options</h2>
+        <h2>Netflix / Prime Options</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
           Every duration and screen combination needs its own price. Nothing is
           calculated automatically. Device counts never affect these prices. The
           device step disappears for Full Account on its own.
           <br />
-          <strong>Untick a duration</strong> to hide it from customers. Its
+          <strong>Uncheck a duration</strong> to hide it from customers. Its
           prices stay here, so you can switch it back on later.
         </p>
 
@@ -222,11 +222,11 @@ export default function NetflixEditor({ groups, prices, onChange }: Props) {
       </div>
 
       <div className="admin-panel">
-        <h2>Allowed devices</h2>
+        <h2>Allowed Devices</h2>
         <p className="hint" style={{ marginBottom: "var(--space-4)" }}>
-          Only ticked categories are offered. The customer allocates one device
+          Only checked categories are offered. The customer allocates one device
           per screen bought — two screens means two devices in any split. Device
-          counts never change the price. Untick everything to remove the device
+          counts never change the price. Uncheck everything to remove the device
           step from this product entirely.
         </p>
 

@@ -12,6 +12,14 @@ export const orderStatuses: OrderStatus[] = [
   "cancelled",
 ];
 
+/** Labels shown in the admin. The stored values stay lowercase. */
+export const orderStatusLabels: Record<OrderStatus, string> = {
+  pending: "Pending",
+  verified: "Verified",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
+
 /** Only these count toward revenue. */
 export const earningStatuses: OrderStatus[] = ["verified", "delivered"];
 

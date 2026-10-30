@@ -105,7 +105,7 @@ export default async function AdminCustomers({
                   <th>Phone</th>
                   <th>Orders</th>
                   <th>Spent</th>
-                  <th>Last order</th>
+                  <th>Last Order</th>
                   <th />
                 </tr>
               </thead>
@@ -155,7 +155,7 @@ export default async function AdminCustomers({
       </div>
 
       <div className="admin-panel">
-        <h2>Staff accounts</h2>
+        <h2>Staff Accounts</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
           Accounts that can sign in here. Create them with{" "}
           <code>npm run seed</code> and the SEED_ADMIN_* values in{" "}

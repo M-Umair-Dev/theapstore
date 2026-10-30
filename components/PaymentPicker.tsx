@@ -180,7 +180,7 @@ export default function PaymentPicker({
               <Detail label="Coin" value={active.asset ?? ""} />
               <Detail label="Network" value={active.network ?? ""} />
               <Detail
-                label="Wallet address"
+                label="Wallet Address"
                 value={active.accountNumber}
                 copyable
               />
@@ -195,14 +195,14 @@ export default function PaymentPicker({
           {active.bankName && <Detail label="Bank" value={active.bankName} />}
           {active.id !== "crypto" && (
             <Detail
-              label="Account title"
+              label="Account Title"
               value={active.accountTitle}
               copyable
             />
           )}
           {active.id !== "crypto" && (
             <Detail
-              label={active.id === "bank_transfer" ? "Account number" : "Number"}
+              label={active.id === "bank_transfer" ? "Account Number" : "Number"}
               value={active.accountNumber}
               copyable
             />

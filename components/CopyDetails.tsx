@@ -9,7 +9,7 @@ import { useState } from "react";
  */
 export default function CopyDetails({
   formId,
-  label = "Copy details",
+  label = "Copy Details",
 }: {
   /** id of the form holding the credential fields. */
   formId: string;

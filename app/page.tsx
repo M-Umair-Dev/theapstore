@@ -9,34 +9,34 @@ export const dynamic = "force-dynamic";
 
 const values = [
   {
-    title: `Trusted since ${site.since}`,
+    title: `Trusted Since ${site.since}`,
     body: "Thousands of orders delivered, with a warranty on every plan we sell.",
   },
   {
-    title: "Order in minutes",
-    body: "Pick a plan, pay, upload your proof. Most orders land within the hour.",
+    title: "Order in Minutes",
+    body: "Pick a plan, pay, and upload your proof. Most orders land within the hour.",
   },
   {
-    title: "Support that answers",
+    title: "Support That Answers",
     body: "Real people on WhatsApp and email, before and after the sale.",
   },
   {
-    title: "One store, every tool",
-    body: "Streaming, AI, productivity, design, VPN and live TV in one place.",
+    title: "One Store, Every Tool",
+    body: "Streaming, AI, productivity, design, VPN, and live TV in one place.",
   },
 ];
 
 const steps = [
   {
-    title: "Pick your product and plan",
+    title: "Pick Your Product and Plan",
     body: "Choose the service, then the duration or screen count that fits how you watch.",
   },
   {
-    title: "Complete payment",
-    body: "Pay by bank transfer, Easypaisa or JazzCash, then upload your proof on the order page.",
+    title: "Complete Payment",
+    body: "Pay by bank transfer, EasyPaisa, or JazzCash, then upload your proof on the order page.",
   },
   {
-    title: "Receive your access",
+    title: "Receive Your Access",
     body: "We verify the payment and send your subscription, credentials or invite — usually within the hour.",
   },
 ];
@@ -48,7 +48,7 @@ export default async function Home() {
     return (
       <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
         <div className="empty-state">
-          <h2>The store is empty</h2>
+          <h2>The Store Is Empty</h2>
           <p>
             No products in the database yet. Run <code>npm run seed</code> with
             your <code>.env.local</code> configured, then reload.
@@ -70,12 +70,12 @@ export default async function Home() {
       <section className="hero">
         <div className="container hero-grid">
           <div>
-            <span className="eyebrow">Digital store · since {site.since}</span>
+            <span className="eyebrow">Digital Store · Since {site.since}</span>
             <h1 className="hero-title">
               Your Digital Essentials, All in One Place
             </h1>
             <p className="hero-lead">
-              Subscriptions, AI tools, software and security — delivered
+              Subscriptions, AI tools, software, and security — delivered
               digitally and backed by warranty. Order on the site or send us a
               message, whichever is easier.
             </p>
@@ -100,7 +100,7 @@ export default async function Home() {
               <span className="chip">Productivity</span>
               <span className="chip">Streaming</span>
               <span className="chip">Entertainment</span>
-              <span className="chip">Digital delivery</span>
+              <span className="chip">Digital Delivery</span>
             </div>
           </div>
 
@@ -125,14 +125,14 @@ export default async function Home() {
         <div className="container">
           <div className="section-head">
             <div>
-              <h2 className="section-title">Featured products</h2>
+              <h2 className="section-title">Featured Products</h2>
               <p className="section-lead">
                 The plans our customers order most, across every category in the
                 store.
               </p>
             </div>
             <Link href="/shop" className="section-link">
-              View all products
+              View All Products
             </Link>
           </div>
 
@@ -148,14 +148,14 @@ export default async function Home() {
         <div className="container">
           <div className="section-head">
             <div>
-              <h2 className="section-title">Browse by category</h2>
+              <h2 className="section-title">Browse by Category</h2>
               <p className="section-lead">
                 Every product in the store is grouped so you can find what you
                 need without scrolling.
               </p>
             </div>
             <Link href="/categories" className="section-link">
-              All categories
+              All Categories
             </Link>
           </div>
 
@@ -179,7 +179,7 @@ export default async function Home() {
         <div className="container">
           <div className="section-head">
             <div>
-              <h2 className="section-title">Why choose {site.name}</h2>
+              <h2 className="section-title">Why Choose {site.name}</h2>
               <p className="section-lead">
                 Four reasons customers come back for their next subscription.
               </p>
@@ -204,7 +204,7 @@ export default async function Home() {
         <div className="container">
           <div className="section-head">
             <div>
-              <h2 className="section-title">How it works</h2>
+              <h2 className="section-title">How It Works</h2>
               <p className="section-lead" style={{ color: "var(--dark-muted)" }}>
                 Three steps from picking a plan to using it.
               </p>
@@ -226,7 +226,7 @@ export default async function Home() {
         <div className="container">
           <h2>Find the Right Digital Service for You</h2>
           <p>
-            Subscriptions, tools and services — each with a warranty and a real
+            Subscriptions, tools, and services — each with a warranty and a real
             person behind it.
           </p>
           <div className="hero-actions">
@@ -234,7 +234,7 @@ export default async function Home() {
               Explore the Shop
             </Link>
             <Link href="/contact" className="btn btn-secondary">
-              Talk to us
+              Talk to Us
             </Link>
           </div>
         </div>

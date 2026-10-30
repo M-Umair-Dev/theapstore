@@ -20,10 +20,10 @@ export default async function AdminProducts({
       <div className="admin-head">
         <div>
           <h1>Products</h1>
-          <p>{products.length} in the catalogue.</p>
+          <p>{products.length} in the catalog.</p>
         </div>
         <Link href="/admin/products/new" className="btn btn-primary">
-          Add product
+          Add Product
         </Link>
       </div>
 
@@ -42,7 +42,7 @@ export default async function AdminProducts({
         {products.length === 0 ? (
           <p className="hint">
             No products yet. Run <code>npm run seed</code> to load the starter
-            catalogue, or add one here.
+            catalog, or add one here.
           </p>
         ) : (
           <div className="table-wrap">
@@ -78,7 +78,7 @@ export default async function AdminProducts({
                           <span className="pill pill-primary">Featured</span>
                         )}
                         {product.comingSoon && (
-                          <span className="pill pill-off">Coming soon</span>
+                          <span className="pill pill-off">Coming Soon</span>
                         )}
                       </div>
                     </td>

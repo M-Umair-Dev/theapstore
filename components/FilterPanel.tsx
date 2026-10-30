@@ -26,7 +26,7 @@ export default function FilterPanel({
           href={shopHref({ band, sort, q })}
           className={`filter-link${!category ? " is-active" : ""}`}
         >
-          All products
+          All Products
           <span className="filter-count">{products.length}</span>
         </Link>
         {categories.map((c) => (

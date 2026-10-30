@@ -37,7 +37,9 @@ export default function ProductCard({ product }: { product: Product }) {
               <span
                 key={badge}
                 className={
-                  badge === "Popular" || badge === "Best seller"
+                  badge === "Popular" ||
+                  badge === "Best seller" ||
+                  badge === "Best Seller"
                     ? "badge badge-primary"
                     : "badge badge-dark"
                 }
@@ -68,7 +70,7 @@ export default function ProductCard({ product }: { product: Product }) {
         />
 
         <Link href={`/product/${product.slug}`} className="btn btn-ghost btn-sm">
-          View details
+          View Details
         </Link>
       </div>
     </article>

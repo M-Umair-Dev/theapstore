@@ -50,10 +50,10 @@ export default async function CategoryPage({
       {items.length === 0 ? (
         <div className="container" style={{ paddingBlock: "var(--space-7)" }}>
           <div className="empty-state">
-            <h2>Nothing in this category yet</h2>
-            <p>Browse the rest of the catalogue while we restock.</p>
+            <h2>Nothing in This Category Yet</h2>
+            <p>Browse the rest of the catalog while we restock.</p>
             <Link href="/shop" className="btn btn-primary">
-              Go to the shop
+              Go to the Shop
             </Link>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default async function CategoryPage({
 
       <div className="container" style={{ paddingBottom: "var(--space-8)" }}>
         <Link href="/shop" className="btn btn-secondary">
-          Browse the full shop
+          Browse the Full Shop
         </Link>
       </div>
     </>

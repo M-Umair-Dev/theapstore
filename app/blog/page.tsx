@@ -46,14 +46,14 @@ export default function BlogPage() {
 
       <section className="section dark cta-band">
         <div className="container">
-          <h2>Have a question we have not written about?</h2>
+          <h2>Have a Question We Have Not Written About?</h2>
           <p>Send it over and it may become the next post — you get an answer either way.</p>
           <div className="hero-actions">
             <Link href="/contact" className="btn btn-primary">
-              Ask a question
+              Ask a Question
             </Link>
             <Link href="/shop" className="btn btn-secondary">
-              Browse the shop
+              Browse the Shop
             </Link>
           </div>
         </div>

@@ -56,7 +56,8 @@ async function priceCart(raw: string): Promise<OrderItem[] | string> {
     const planId = typeof line.planId === "string" ? line.planId : "";
     const qty = Number(line.qty);
 
-    if (!slug || !planId) return "An item in your cart is malformed.";
+    if (!slug || !planId)
+      return "An item in your cart is not valid. Remove it and add the product again.";
     if (!Number.isInteger(qty) || qty < 1 || qty > 20) {
       return "Quantities must be whole numbers between 1 and 20.";
     }

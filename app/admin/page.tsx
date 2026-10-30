@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { orderStatusLabels } from "@/lib/order-status";
 import { formatPrice } from "@/lib/products";
 import { adminStats, listOrders, orderStatuses } from "@/lib/repo";
 
@@ -31,7 +32,7 @@ export default async function AdminDashboard() {
           <p>Everything in the store at a glance.</p>
         </div>
         <Link href="/admin/products/new" className="btn btn-primary">
-          Add product
+          Add Product
         </Link>
       </div>
 
@@ -48,7 +49,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="admin-panel">
-        <h2>Recent orders</h2>
+        <h2>Recent Orders</h2>
 
         {recent.length === 0 ? (
           <p className="hint">
@@ -88,7 +89,7 @@ export default async function AdminDashboard() {
                               : " pill-ok"
                         }`}
                       >
-                        {order.status}
+                        {orderStatusLabels[order.status]}
                       </span>
                     </td>
                     <td className="nowrap muted">
@@ -104,17 +105,18 @@ export default async function AdminDashboard() {
         {recent.length > 0 && (
           <p style={{ marginTop: "var(--space-5)" }}>
             <Link href="/admin/orders" className="link-btn">
-              Manage all {recent.length} orders
+              Manage All {recent.length} Orders
             </Link>
           </p>
         )}
       </div>
 
       <div className="admin-panel">
-        <h2>Order statuses</h2>
+        <h2>Order Status</h2>
         <p className="hint">
-          {orderStatuses.join(" · ")} — set these from the Orders page. Only
-          verified and delivered orders count toward revenue.
+          {orderStatuses.map((status) => orderStatusLabels[status]).join(" · ")}{" "}
+          — set these from the Orders page. Only verified and delivered orders
+          count toward revenue.
         </p>
       </div>
     </>

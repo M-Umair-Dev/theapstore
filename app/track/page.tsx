@@ -24,7 +24,7 @@ export default async function TrackPage({
       />
 
       <div className="container" style={{ paddingTop: "var(--space-6)" }}>
-        <h1 className="section-title">Track your order</h1>
+        <h1 className="section-title">Track Your Order</h1>
         <p className="section-lead">
           Your reference is on the confirmation you saw after ordering, and in
           the email we sent. Enter it with the email address you ordered with.

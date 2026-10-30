@@ -15,11 +15,11 @@ const points = [
   },
   {
     title: "Digital only",
-    body: "Nothing ships. Every order arrives by email or WhatsApp, usually within the hour of payment verification.",
+    body: "Nothing ships. Every order arrives by email or WhatsApp, usually within an hour of payment verification.",
   },
   {
     title: "Accountable",
-    body: "Every plan carries a warranty. If access fails inside the window, we replace it — no arguing about it.",
+    body: "Every plan carries a warranty. If access fails inside the window, we replace it.",
   },
 ];
 
@@ -29,14 +29,14 @@ export default function AboutPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "About Us" }]} />
 
       <div className="container prose" style={{ paddingBottom: 0 }}>
-        <span className="eyebrow">Digital store · since {site.since}</span>
+        <span className="eyebrow">Digital Store · Since {site.since}</span>
         <h1 className="section-title">
-          A digital store built on keeping its promises
+          A Digital Store Built on Keeping Its Promises
         </h1>
         <p>
           {site.name} started in {site.since} selling a handful of streaming
           plans. Today we carry subscriptions, AI tools, productivity software,
-          design apps, VPNs and live TV — all delivered digitally, all covered by
+          design apps, VPNs, and live TV — all delivered digitally, all covered by
           a warranty.
         </p>
         <p>
@@ -61,7 +61,7 @@ export default function AboutPage() {
 
       <div className="container" style={{ paddingBottom: "var(--space-8)" }}>
         <div className="prose" style={{ paddingBlock: 0 }}>
-          <h2>How we choose what to stock</h2>
+          <h2>How We Choose What to Stock</h2>
           <p>
             A service makes it into the store only if we can support it after the
             sale. That means a stable supply, a clear warranty path, and delivery
@@ -69,7 +69,7 @@ export default function AboutPage() {
             it, we do not sell it.
           </p>
 
-          <h2>Reach us</h2>
+          <h2>Reach Us</h2>
           <p>
             Email{" "}
             <a href={`mailto:${site.email}`} style={{ color: "var(--primary)" }}>
@@ -86,7 +86,7 @@ export default function AboutPage() {
 
       <section className="section dark cta-band" style={{ paddingTop: 0 }}>
         <div className="container">
-          <h2>Ready to order?</h2>
+          <h2>Ready to Order?</h2>
           <p>Every plan in the store is live and in stock unless marked otherwise.</p>
           <div className="hero-actions">
             <Link href="/shop" className="btn btn-primary">

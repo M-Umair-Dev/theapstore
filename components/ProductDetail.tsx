@@ -188,7 +188,7 @@ export default function ProductDetail({
               className="btn btn-dark btn-sm"
               style={{ marginLeft: "auto" }}
             >
-              Edit product
+              Edit Product
             </Link>
           )}
         </div>
@@ -201,7 +201,7 @@ export default function ProductDetail({
             {complete ? formatPrice(price) : "Choose your options"}
           </span>
           <span className="in-stock">
-            {soldOut ? "Coming soon" : "In stock"}
+            {soldOut ? "Coming Soon" : "In Stock"}
           </span>
         </div>
 
@@ -328,12 +328,12 @@ export default function ProductDetail({
         ) : (
           <>
             <h2 className="block-title" id="plans">
-              Choose a plan
+              Choose a Plan
             </h2>
             <div
               className="plan-list"
               role="radiogroup"
-              aria-label="Choose a plan"
+              aria-label="Choose a Plan"
             >
               {plans.map((p) => (
                 <button
@@ -431,7 +431,7 @@ export default function ProductDetail({
               setAdded(true);
             }}
           >
-            {added ? "Added to cart" : "Add to cart"}
+            {added ? "Added to Cart" : "Add to Cart"}
           </button>
           <button
             type="button"
@@ -442,20 +442,20 @@ export default function ProductDetail({
               router.push("/order");
             }}
           >
-            Order on site
+            Order on Site
           </button>
 
           {/* Navigating away leaves the cart alone — it lives in CartProvider,
               so the lines, quantities and chosen variations are still there. */}
           <Link href="/shop" className="btn btn-ghost btn-block">
-            Continue shopping
+            Continue Shopping
           </Link>
         </div>
 
         <p className={`helper-text${pending ? " is-warning" : ""}`} role={pending ? "status" : undefined}>
           {pending
             ? pendingNote
-            : "Cart several products and complete them in one order, or place this one on its own. You upload your payment proof and we deliver once it is verified."}
+            : "Add several products to your cart and complete them in one order, or place this one on its own. Upload your payment proof, and we deliver once it is verified."}
         </p>
       </aside>
     </div>

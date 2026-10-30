@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart, type NewLine } from "@/lib/cart";
+import { site } from "@/lib/site";
 import { waLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
@@ -33,14 +34,14 @@ export default function CardActions({
   // Card-only message, the same for every product. The cart and checkout build
   // their own lines through cartMessage, so they are untouched by this.
   const whatsapp = waLink(
-    `Hello, The AP Store.\n\nI am interested to buy, ${line.title} subscription!\n\nplz Give me details.`,
+    `Hello ${site.name}, I would like to buy the ${line.title} subscription. Please send the details.`,
   );
 
   if (disabled) {
     return (
       <div className="card-actions">
         <button type="button" className="btn btn-secondary btn-sm" disabled>
-          Coming soon
+          Coming Soon
         </button>
       </div>
     );
@@ -62,7 +63,7 @@ export default function CardActions({
 
       {chooseHref ? (
         <Link href={chooseHref} className="btn btn-dark btn-sm">
-          Choose options
+          Choose Options
         </Link>
       ) : (
         <>
@@ -74,7 +75,7 @@ export default function CardActions({
               setAdded(true);
             }}
           >
-            {added ? "Added" : "Add to cart"}
+            {added ? "Added to Cart" : "Add to Cart"}
           </button>
           <button
             type="button"
@@ -84,7 +85,7 @@ export default function CardActions({
               router.push("/order");
             }}
           >
-            Order on site
+            Order on Site
           </button>
         </>
       )}

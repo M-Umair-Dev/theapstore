@@ -22,7 +22,7 @@ const STATUS_COPY: Record<OrderStatus, { label: string; detail: string }> = {
   delivered: {
     label: "Delivered",
     detail:
-      "Your access details have been sent to the email you ordered with. Check your spam folder if you can't find them.",
+      "Your access details have been sent to the email you ordered with. Check your spam folder if you cannot find them.",
   },
   cancelled: {
     label: "Cancelled",
@@ -44,7 +44,7 @@ export default function TrackForm({
         <div className="form-grid">
           <div className="field">
             <label className="label" htmlFor="reference">
-              Order reference
+              Order Reference
             </label>
             <input
               id="reference"
@@ -78,7 +78,7 @@ export default function TrackForm({
 
         <div style={{ marginTop: "var(--space-6)" }}>
           <button type="submit" className="btn btn-primary" disabled={pending}>
-            {pending ? "Looking up…" : "Track order"}
+            {pending ? "Looking up…" : "Track Order"}
           </button>
         </div>
       </form>
@@ -102,7 +102,7 @@ export default function TrackForm({
             </span>
           </div>
           <div className="summary-row">
-            <span>Status</span>
+            <span>Order Status</span>
             <span
               className={`pill${
                 state.order.status === "pending"

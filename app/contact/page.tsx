@@ -23,13 +23,13 @@ export default function ContactPage() {
         <div>
           {sent ? (
             <div className="empty-state">
-              <h2>Message sent</h2>
+              <h2>Message Sent</h2>
               <p>
                 Thanks — we have your message and will reply to the address you
                 gave us, usually within a few hours during business hours.
               </p>
               <Link href="/shop" className="btn btn-primary">
-                Back to the shop
+                Back to the Shop
               </Link>
             </div>
           ) : (
@@ -59,10 +59,10 @@ export default function ContactPage() {
                   </label>
                   <select id="c-subject" className="select" required>
                     <option value="">Choose a subject</option>
-                    <option>Question before ordering</option>
-                    <option>Warranty or replacement claim</option>
-                    <option>Order status</option>
-                    <option>Something else</option>
+                    <option>Question Before Ordering</option>
+                    <option>Warranty or Replacement Claim</option>
+                    <option>Order Status</option>
+                    <option>Something Else</option>
                   </select>
                 </div>
                 <div className="field field-full">
@@ -75,7 +75,7 @@ export default function ContactPage() {
 
               <div style={{ marginTop: "var(--space-6)" }}>
                 <button type="submit" className="btn btn-primary">
-                  Send message
+                  Send Message
                 </button>
               </div>
             </form>
@@ -84,7 +84,7 @@ export default function ContactPage() {
 
         <aside className="summary-card">
           <h2 style={{ fontSize: 16, marginBottom: "var(--space-3)" }}>
-            Reach us directly
+            Reach Us Directly
           </h2>
           <div className="summary-row">
             <span>Email</span>

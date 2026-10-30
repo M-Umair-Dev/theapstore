@@ -164,7 +164,7 @@ function parseOptions(raw: string): {
   }
 
   if (new Set(groups.map((g) => g.id)).size !== groups.length) {
-    return { error: "Two option groups share an id. Remove one and add it again." };
+    return { error: "Two option groups share an ID. Remove one and add it again." };
   }
 
   // hideWhen can only be checked once every group is known.
@@ -221,7 +221,7 @@ function parseOptions(raw: string): {
 
   const priced = groups.filter((g) => g.priced);
   if (priced.length === 0) {
-    return { error: 'Tick "Sets the price" on at least one group.' };
+    return { error: 'Check "Sets the price" on at least one group.' };
   }
 
   const rawPrices = Array.isArray(data.prices) ? data.prices : [];

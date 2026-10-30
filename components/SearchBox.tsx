@@ -170,7 +170,7 @@ export default function SearchBox({ initial = "", live, base }: Props) {
       {showDrop && (
         <div className="search-drop">
           {items.length === 0 ? (
-            <p className="search-empty">No matching products found</p>
+            <p className="search-empty">No matching products found.</p>
           ) : (
             <ul className="search-list">
               {items.map((item) => (
@@ -206,7 +206,7 @@ export default function SearchBox({ initial = "", live, base }: Props) {
           )}
 
           <button type="button" className="search-all" onClick={goToShop}>
-            View all results for “{term}”
+            View All Results for “{term}”
           </button>
         </div>
       )}

@@ -23,23 +23,23 @@ export async function generateMetadata({
 
 const guidelines = [
   "Use only the access type stated on your plan.",
-  "Do not alter passwords, recovery information, billing or security settings unless the delivery instructions tell you to.",
-  "Do not exceed the users, profiles, screens or devices included in your plan.",
+  "Do not alter passwords, recovery information, billing, or security settings unless the delivery instructions tell you to.",
+  "Do not exceed the users, profiles, screens, or devices included in your plan.",
   "Keep your credentials private, and contact support before making major changes to an account.",
   "Product-specific terms override these general guidelines where they differ.",
 ];
 
 const faqs = [
   {
-    q: "How do I receive my order?",
-    a: "After payment is verified we send your credentials or access details by email, usually within the hour. Track the order any time from your account page.",
+    q: "How Do I Receive My Order?",
+    a: "After payment is verified, we send your credentials or access details by email, usually within the hour. Track the order any time on the Track Order page.",
   },
   {
-    q: "How does the warranty work?",
+    q: "How Does the Warranty Work?",
     a: "The warranty covers access problems for the period shown on this page. If your access stops working, contact us and we replace it at no cost.",
   },
   {
-    q: "How do I order?",
+    q: "How Do I Order?",
     a: "Add the plan to your cart and complete the order on the site, or message us if you would rather do it in chat.",
   },
 ];
@@ -83,7 +83,7 @@ export default async function ProductPage({
             several screens of scrolling on a phone. Nothing is removed. */}
         <ProductFolds resetKey={slug}>
         <details className="pd-fold" open>
-          <summary className="block-title">Key features</summary>
+          <summary className="block-title">Key Features</summary>
           <ul className="spec-list">
             {product.specs.map((spec) => (
               <li key={spec}>{spec}</li>
@@ -102,7 +102,7 @@ export default async function ProductPage({
 
         <details className="pd-fold">
           <summary className="block-title">
-            Important access and account guidelines
+            Important Account Guidelines
           </summary>
           <ul className="includes-list">
             {guidelines.map((rule) => (
@@ -112,7 +112,7 @@ export default async function ProductPage({
         </details>
 
         <details className="pd-fold">
-          <summary className="block-title">Frequently asked questions</summary>
+          <summary className="block-title">Frequently Asked Questions</summary>
           <div
             style={{
               display: "grid",
@@ -141,7 +141,7 @@ export default async function ProductPage({
           <div className="container">
             <div className="section-head">
               <div>
-                <h2 className="section-title">You may also like</h2>
+                <h2 className="section-title">You May Also Like</h2>
                 <p className="section-lead">
                   More from {getCategoryName(product.category)}.
                 </p>
@@ -150,7 +150,7 @@ export default async function ProductPage({
                 href={`/category/${product.category}`}
                 className="section-link"
               >
-                View all
+                View All
               </Link>
             </div>
 

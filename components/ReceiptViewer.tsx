@@ -47,7 +47,7 @@ export default function ReceiptViewer({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={`Payment screenshot for ${reference}`} />
       </button>
-      <p className="hint">Click to open full size.</p>
+      <p className="hint">Click to open it at full size.</p>
 
       {open && (
         <div
@@ -63,7 +63,7 @@ export default function ReceiptViewer({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="receipt-modal-head">
-              <span>Payment screenshot · {reference}</span>
+              <span>Payment Screenshot · {reference}</span>
               <div className="receipt-modal-actions">
                 <a
                   className="btn btn-secondary btn-sm"
@@ -71,7 +71,7 @@ export default function ReceiptViewer({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Open in new tab
+                  Open in New Tab
                 </a>
                 <button
                   type="button"

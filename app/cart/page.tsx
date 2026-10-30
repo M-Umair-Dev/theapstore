@@ -25,7 +25,7 @@ export default function CartPage() {
   return (
     <>
       <div className="container" style={{ paddingTop: "var(--space-6)" }}>
-        <h1 className="section-title">Your cart</h1>
+        <h1 className="section-title">Your Cart</h1>
         <p className="section-lead">
           Review your products and plans, then complete them together in one
           order.
@@ -35,13 +35,13 @@ export default function CartPage() {
       <div className="container cart-layout">
         {!ready ? null : lines.length === 0 ? (
           <div className="empty-state" style={{ gridColumn: "1 / -1" }}>
-            <h2>Your cart is empty</h2>
+            <h2>Your Cart Is Empty</h2>
             <p>
               Nothing here yet. Pick a plan from the shop and it will appear in
               this list.
             </p>
             <Link href="/shop" className="btn btn-primary">
-              Browse the shop
+              Browse the Shop
             </Link>
           </div>
         ) : (
@@ -152,7 +152,13 @@ export default function CartPage() {
               </div>
               <div className="summary-row">
                 <span>Delivery</span>
-                <span>Digital, by email</span>
+                <span>
+                  {delivery === "whatsapp"
+                    ? "Digital, by WhatsApp"
+                    : delivery === "email"
+                      ? "Digital, by email"
+                      : "Digital"}
+                </span>
               </div>
 
               <div className="summary-total">
@@ -173,16 +179,16 @@ export default function CartPage() {
                   </a>
                 )}
                 <Link href="/order" className="btn btn-primary btn-block">
-                  Proceed to Order
+                  Checkout
                 </Link>
                 <Link href="/shop" className="btn btn-secondary btn-block">
-                  Continue shopping
+                  Continue Shopping
                 </Link>
               </div>
 
               <p className="helper-text">
                 Nothing is charged until you confirm. Prices are re-checked
-                against the catalogue when the order is placed.
+                against the catalog when the order is placed.
               </p>
             </aside>
           </>

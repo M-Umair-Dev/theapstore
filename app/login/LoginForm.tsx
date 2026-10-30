@@ -51,7 +51,7 @@ export default function LoginForm({ next }: { next: string }) {
         className="btn btn-primary btn-block"
         disabled={pending}
       >
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? "Signing in…" : "Sign In"}
       </button>
     </form>
   );

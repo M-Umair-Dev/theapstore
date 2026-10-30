@@ -68,7 +68,7 @@ export function buildWhatsAppMessage(d: FulfillmentMessageInput) {
     .map((i) =>
       [
         `Product: ${i.title}`,
-        i.planName && `Subscription/Variation: ${i.planName}`,
+        i.planName && `Plan: ${i.planName}`,
         i.meta && `Includes: ${i.meta}`,
       ]
         .filter(Boolean)
@@ -99,9 +99,9 @@ export function buildWhatsAppMessage(d: FulfillmentMessageInput) {
     products,
     subscription,
     "",
-    account ? `ACCOUNT DETAILS\n\n${account}` : "",
-    d.instructions ? `LOGIN INSTRUCTIONS\n\n${d.instructions}` : "",
-    d.notes ? `ADDITIONAL INFORMATION\n\n${d.notes}` : "",
+    account ? `Account Details\n\n${account}` : "",
+    d.instructions ? `Login Instructions\n\n${d.instructions}` : "",
+    d.notes ? `Additional Information\n\n${d.notes}` : "",
     "If you need assistance with login or usage, please contact our support team on WhatsApp.",
     "",
     `Thank you for shopping with ${d.storeName}!`,

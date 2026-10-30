@@ -99,7 +99,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
   return (
     <>
       <div className="admin-panel">
-        <h2>Option groups</h2>
+        <h2>Option Groups</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
           Shown to the customer in this order.
           <br />
@@ -122,7 +122,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                       className="link-btn"
                       onClick={() => removeGroup(g.id)}
                     >
-                      Remove group
+                      Remove Group
                     </button>
                   )}
                 </div>
@@ -151,8 +151,8 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                         })
                       }
                     >
-                      <option value="select">Pick one</option>
-                      <option value="multi">Pick any number</option>
+                      <option value="select">Pick One</option>
+                      <option value="multi">Pick Any Number</option>
                     </select>
                   </div>
 
@@ -171,7 +171,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                   </div>
 
                   <div className="field">
-                    <label className="label">Hide this group when</label>
+                    <label className="label">Hide This Group When</label>
                     <select
                       className="select"
                       value={g.hideWhen?.groupId ?? ""}
@@ -254,7 +254,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                         />
                       </div>
                       <div className="field">
-                        <label className="label">Note (optional)</label>
+                        <label className="label">Note (Optional)</label>
                         <div style={{ display: "flex", gap: "var(--space-3)" }}>
                           <input
                             className="input"
@@ -287,7 +287,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
                   style={{ marginTop: "var(--space-4)" }}
                   onClick={() => addChoice(g.id)}
                 >
-                  Add choice
+                  Add Choice
                 </button>
               </div>
             );
@@ -300,7 +300,7 @@ export default function OptionsEditor({ groups, prices, onChange }: Props) {
           style={{ marginTop: "var(--space-4)" }}
           onClick={() => emit([...groups, newGroup()])}
         >
-          Add group
+          Add Group
         </button>
       </div>
 

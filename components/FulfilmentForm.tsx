@@ -166,7 +166,7 @@ export default function FulfilmentForm({
               {
                 value: "whatsapp" as const,
                 name: "Send via WhatsApp",
-                note: `Opens a chat with ${order.customerName} and types the details in. You press Send.`,
+                note: `Opens a chat with ${order.customerName} and fills in the details. You press Send.`,
               },
             ] satisfies { value: Method; name: string; note: string }[]
           ).map((option) => (
@@ -210,7 +210,7 @@ export default function FulfilmentForm({
 
       {method === "whatsapp" && preview && (
         <div className="wa-preview">
-          <p className="stat-label">Message preview</p>
+          <p className="stat-label">Message Preview</p>
           <pre>{preview}</pre>
           <p className="hint">
             Exactly what was typed into the chat box. Only the message text
@@ -234,9 +234,9 @@ export default function FulfilmentForm({
           <input type="hidden" name="back" value={back} />
           <ConfirmSubmit
             className="btn btn-secondary btn-sm"
-            label="I sent it on WhatsApp"
+            label="Mark as Sent on WhatsApp"
             pendingLabel="Saving…"
-            message={`Record that the account details for ${order.reference} were sent to ${order.customerName} on WhatsApp?\n\nThis only writes the fulfilment record. It does not send anything and does not change the order or payment status.`}
+            message={`Record that the account details for ${order.reference} were sent to ${order.customerName} on WhatsApp?\n\nThis only writes the fulfillment record. It does not send anything and does not change the order or payment status.`}
           />
           <span className="hint">
             Only press this after you have pressed Send in WhatsApp. This panel

@@ -12,11 +12,11 @@ export default function Error({
   return (
     <div className="container" style={{ paddingBlock: "var(--space-8)" }}>
       <div className="empty-state">
-        <h2>Something went wrong</h2>
+        <h2>Something Went Wrong</h2>
         <p>{explainError(error)}</p>
         <div className="hero-actions" style={{ justifyContent: "center" }}>
           <button type="button" className="btn btn-primary" onClick={reset}>
-            Try again
+            Try Again
           </button>
         </div>
         {error.digest && (

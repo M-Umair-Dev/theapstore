@@ -9,7 +9,7 @@ import {
   updateOrderStatusAction,
 } from "@/app/admin/actions";
 import { emailConfigured } from "@/lib/email";
-import { deliveryLabel } from "@/lib/order-status";
+import { deliveryLabel, orderStatusLabels } from "@/lib/order-status";
 import { formatPrice } from "@/lib/products";
 import { site } from "@/lib/site";
 import { IMAGE_ACCEPT } from "@/lib/uploads";
@@ -27,9 +27,9 @@ const formatDateTime = (d: Date) =>
   });
 
 const sorts = {
-  newest: "Newest first",
-  oldest: "Oldest first",
-  amount: "Highest total",
+  newest: "Newest First",
+  oldest: "Oldest First",
+  amount: "Highest Total",
 } as const;
 
 type Sort = keyof typeof sorts;
@@ -149,12 +149,12 @@ export default async function AdminOrders({
                 name="q"
                 className="input"
                 defaultValue={sp.q ?? ""}
-                placeholder="Reference, customer name or email"
+                placeholder="Reference, customer name, or email"
               />
             </div>
             <div className="field">
               <label className="label" htmlFor="order-status">
-                Status
+                Order Status
               </label>
               <select
                 id="order-status"
@@ -162,10 +162,10 @@ export default async function AdminOrders({
                 className="select"
                 defaultValue={status ?? ""}
               >
-                <option value="">Any status</option>
+                <option value="">Any Status</option>
                 {orderStatuses.map((s) => (
                   <option key={s} value={s}>
-                    {s}
+                    {orderStatusLabels[s]}
                   </option>
                 ))}
               </select>
@@ -195,7 +195,7 @@ export default async function AdminOrders({
             </button>
             {filtered && (
               <Link href="/admin/orders" className="link-btn">
-                Clear filters
+                Clear Filters
               </Link>
             )}
           </div>
@@ -236,7 +236,7 @@ export default async function AdminOrders({
                         : " pill-ok"
                   }`}
                 >
-                  {order.status}
+                  {orderStatusLabels[order.status]}
                 </span>
               </span>
             </div>
@@ -274,7 +274,7 @@ export default async function AdminOrders({
                 </p>
               </div>
               <div>
-                <div className="stat-label">Delivery method</div>
+                <div className="stat-label">Delivery Method</div>
                 <p style={{ marginTop: 6 }}>
                   <strong>{deliveryLabel(order.deliveryMethod)}</strong>
                 </p>
@@ -316,7 +316,7 @@ export default async function AdminOrders({
             </div>
 
             <div className="receipt-block">
-              <div className="stat-label">Payment screenshot</div>
+              <div className="stat-label">Payment Screenshot</div>
               {order.receiptContentType ? (
                 <ReceiptViewer reference={order.reference} />
               ) : (
@@ -334,24 +334,24 @@ export default async function AdminOrders({
                   name="status"
                   className="select"
                   defaultValue={order.status}
-                  aria-label={`Status for ${order.reference}`}
+                  aria-label={`Order Status for ${order.reference}`}
                 >
                   {orderStatuses.map((s) => (
                     <option key={s} value={s}>
-                      {s}
+                      {orderStatusLabels[s]}
                     </option>
                   ))}
                 </select>
                 <button type="submit" className="btn btn-primary btn-sm">
-                  Update status
+                  Update Status
                 </button>
                 <a
                   className="link-btn"
                   href={`mailto:${order.customer.email}?subject=${encodeURIComponent(
-                    `Your ${order.reference} order`,
+                    `Your order ${order.reference}`,
                   )}`}
                 >
-                  Email customer
+                  Email Customer
                 </a>
               </form>
 
@@ -361,7 +361,7 @@ export default async function AdminOrders({
                 <input type="hidden" name="reference" value={order.reference} />
                 <input type="hidden" name="back" value={backHref} />
                 <ConfirmSubmit
-                  label="Delete order"
+                  label="Delete Order"
                   message={`Delete Order ${order.reference}?\n\nThis permanently removes the order for ${order.customer.name} (${formatPrice(
                     order.total,
                   )}) and its payment screenshot from the database.\n\nThis action cannot be undone.`}
@@ -371,10 +371,11 @@ export default async function AdminOrders({
 
             <details className="fulfil">
               <summary>
-                Send account details
+                Send Account Details
                 {order.fulfillment ? (
                   <span className="pill pill-ok" style={{ marginLeft: "var(--space-3)" }}>
-                    sent ×{order.fulfillment.count}
+                    Sent {order.fulfillment.count}{" "}
+                    {order.fulfillment.count === 1 ? "time" : "times"}
                   </span>
                 ) : null}
               </summary>
@@ -391,7 +392,7 @@ export default async function AdminOrders({
               {order.deliveryMethod === "whatsapp" && (
                 <p className="hint" style={{ marginTop: "var(--space-4)", marginBottom: 0 }}>
                   This customer asked for WhatsApp. WhatsApp is preselected
-                  below — switch it to email if you would rather send that.
+                  below. Switch to email if you would rather send by email.
                 </p>
               )}
 
@@ -425,7 +426,7 @@ export default async function AdminOrders({
                 <div className="form-row">
                   <div className="field">
                     <label className="label" htmlFor={`to-${order.reference}`}>
-                      Customer email
+                      Customer Email
                     </label>
                     <input
                       id={`to-${order.reference}`}
@@ -445,7 +446,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`phone-${order.reference}`}
                     >
-                      Customer WhatsApp number
+                      Customer WhatsApp Number
                     </label>
                     <input
                       id={`phone-${order.reference}`}
@@ -464,7 +465,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`user-${order.reference}`}
                     >
-                      Account username or email
+                      Account Username or Email
                     </label>
                     <input
                       id={`user-${order.reference}`}
@@ -481,7 +482,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`pass-${order.reference}`}
                     >
-                      Account password
+                      Account Password
                     </label>
                     <input
                       id={`pass-${order.reference}`}
@@ -516,13 +517,13 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`exp-${order.reference}`}
                     >
-                      Expiry date
+                      Expiration Date
                     </label>
                     <input
                       id={`exp-${order.reference}`}
                       name="expiry"
                       className="input"
-                      placeholder="12 January 2027"
+                      placeholder="January 12, 2027"
                     />
                   </div>
 
@@ -531,7 +532,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`how-${order.reference}`}
                     >
-                      Login and usage instructions
+                      Login and Usage Instructions
                     </label>
                     <textarea
                       id={`how-${order.reference}`}
@@ -548,7 +549,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`note-${order.reference}`}
                     >
-                      Additional notes
+                      Additional Notes
                     </label>
                     <textarea
                       id={`note-${order.reference}`}
@@ -562,7 +563,7 @@ export default async function AdminOrders({
                       className="label"
                       htmlFor={`files-${order.reference}`}
                     >
-                      Screenshots or instructions (optional)
+                      Screenshots or Instructions (Optional)
                     </label>
                     <input
                       id={`files-${order.reference}`}

@@ -27,7 +27,7 @@ export default async function AdminPayments({
     <>
       <div className="admin-head">
         <div>
-          <h1>Payment Methods Settings</h1>
+          <h1>Payment Method Settings</h1>
           <p>
             The accounts customers pay into. A method reaches checkout only when
             it is both enabled and visible.
@@ -79,12 +79,12 @@ export default async function AdminPayments({
                   <span
                     className={`pill${method.enabled ? " pill-ok" : " pill-off"}`}
                   >
-                    {method.enabled ? "enabled" : "disabled"}
+                    {method.enabled ? "Enabled" : "Disabled"}
                   </span>
                   <span
                     className={`pill${method.visible ? " pill-ok" : " pill-off"}`}
                   >
-                    {method.visible ? "visible" : "hidden"}
+                    {method.visible ? "Visible" : "Hidden"}
                   </span>
                 </span>
               </div>
@@ -93,7 +93,7 @@ export default async function AdminPayments({
                 {isBank && (
                   <div className="field">
                     <label className="label" htmlFor={`bankName:${id}`}>
-                      Bank name
+                      Bank Name
                     </label>
                     <input
                       id={`bankName:${id}`}
@@ -107,7 +107,7 @@ export default async function AdminPayments({
 
                 <div className="field">
                   <label className="label" htmlFor={`title:${id}`}>
-                    Account title
+                    Account Title
                   </label>
                   <input
                     id={`title:${id}`}
@@ -121,10 +121,10 @@ export default async function AdminPayments({
                 <div className="field">
                   <label className="label" htmlFor={`number:${id}`}>
                     {isBank
-                      ? "Account number"
+                      ? "Account Number"
                       : isCrypto
-                        ? "Wallet address"
-                        : "Mobile / account number"}
+                        ? "Wallet Address"
+                        : "Mobile / Account Number"}
                   </label>
                   <input
                     id={`number:${id}`}
@@ -198,7 +198,7 @@ export default async function AdminPayments({
                     </div>
                     <div className="field">
                       <label className="label" htmlFor={`branch:${id}`}>
-                        Branch (optional)
+                        Branch (Optional)
                       </label>
                       <input
                         id={`branch:${id}`}
@@ -212,7 +212,7 @@ export default async function AdminPayments({
 
                 <div className="field field-full">
                   <label className="label" htmlFor={`instructions:${id}`}>
-                    Payment instructions (optional)
+                    Payment Instructions (Optional)
                   </label>
                   <textarea
                     id={`instructions:${id}`}
@@ -253,10 +253,10 @@ export default async function AdminPayments({
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary">
-            Save payment methods
+            Save Payment Methods
           </button>
           <Link href="/order" className="link-btn" target="_blank">
-            Preview checkout
+            Preview Checkout
           </Link>
         </div>
       </form>

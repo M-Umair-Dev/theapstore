@@ -11,12 +11,12 @@ export const seedProducts: Product[] = [
     category: "streaming",
     tagline: "4K Ultra HD quality",
     summary:
-      "4K Ultra HD plans with single, dual, three screens or a private full account. Personalised profiles on every shared tier.",
+      "4K Ultra HD plans with one, two, or three screens, or a private full account. Personalized profiles on every shared tier.",
     badges: ["Popular", "Pakistan Plans"],
     warranty: "28-Day Replacement Warranty",
     specs: [
       "4K Ultra HD quality on every plan",
-      "Personalised profiles on shared plans",
+      "Personalized profiles on shared plans",
       "Dedicated private access on the Full Account tier",
       "28-day replacement warranty",
       "Uninterrupted viewing with no screen-limit disruptions",
@@ -30,7 +30,7 @@ export const seedProducts: Product[] = [
     optionGroups: [
       {
         id: "duration",
-        label: "Select Duration",
+        label: "Select Your Duration",
         priced: true,
         choices: [
           { id: "1m", label: "1 Month" },
@@ -41,7 +41,7 @@ export const seedProducts: Product[] = [
       },
       {
         id: "screens",
-        label: "Select Screen",
+        label: "Select Your Screen",
         priced: true,
         choices: [
           { id: "s1", label: "1 Screen" },
@@ -52,7 +52,7 @@ export const seedProducts: Product[] = [
       },
       {
         id: "device",
-        label: "Select Devices",
+        label: "Select Your Devices",
         kind: "multi",
         hideWhen: { groupId: "screens", choiceIds: ["full"] },
         // One allocation per screen: a 2-screen package takes two devices.
@@ -89,7 +89,7 @@ export const seedProducts: Product[] = [
     slug: "amazon-prime-video",
     title: "Amazon Prime Video",
     category: "streaming",
-    tagline: "Originals, movies and live sport",
+    tagline: "Originals, movies, and live sports",
     summary:
       "Prime Video access on a private profile. Choose one, three or six months of uninterrupted streaming.",
     badges: ["Pakistan Plans"],
@@ -107,7 +107,7 @@ export const seedProducts: Product[] = [
     optionGroups: [
       {
         id: "duration",
-        label: "Select Duration",
+        label: "Select Your Duration",
         priced: true,
         choices: [
           { id: "1m", label: "1 Month" },
@@ -118,7 +118,7 @@ export const seedProducts: Product[] = [
       },
       {
         id: "screens",
-        label: "Select Screen",
+        label: "Select Your Screen",
         priced: true,
         choices: [
           { id: "s1", label: "1 Screen" },
@@ -129,7 +129,7 @@ export const seedProducts: Product[] = [
       },
       {
         id: "device",
-        label: "Select Devices",
+        label: "Select Your Devices",
         kind: "multi",
         hideWhen: { groupId: "screens", choiceIds: ["full"] },
         // One allocation per screen: a 2-screen package takes two devices.
@@ -196,7 +196,7 @@ export const seedProducts: Product[] = [
         name: "6 Months",
         meta: ["Own account", "Ad-free", "6 Months"],
         price: 1599,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -233,7 +233,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["Own account", "Ad-free", "12 Months"],
         price: 4999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -243,11 +243,11 @@ export const seedProducts: Product[] = [
     category: "streaming",
     tagline: "Premium series and Warner releases",
     summary:
-      "HBO Max on a single device with full access to the original series catalogue and same-day Warner releases.",
+      "HBO Max on a single device with full access to the original series catalog and same-day Warner releases.",
     badges: ["Premium"],
     warranty: "28-Day Replacement Warranty",
     specs: [
-      "Full HBO Max catalogue",
+      "Full HBO Max catalog",
       "Same-day Warner Bros. releases",
       "Full HD, single device",
       "28-day replacement warranty",
@@ -344,15 +344,15 @@ export const seedProducts: Product[] = [
       {
         id: "MJ-1M-BASIC",
         name: "Basic",
-        meta: ["3.3 fast hrs", "1 Month"],
+        meta: ["3.3 fast hours", "1 Month"],
         price: 1599,
       },
       {
         id: "MJ-1M-STD",
         name: "Standard",
-        meta: ["15 fast hrs", "1 Month"],
+        meta: ["15 fast hours", "1 Month"],
         price: 2999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -383,7 +383,7 @@ export const seedProducts: Product[] = [
         name: "1 Year — Family",
         meta: ["6 users", "5 devices each", "12 Months"],
         price: 3999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -414,7 +414,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["Shared access", "Premium", "12 Months"],
         price: 2999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -425,11 +425,11 @@ export const seedProducts: Product[] = [
     tagline: "Premium templates and brand kit",
     summary:
       "Canva Pro on an individual account with the full template library, brand kit and background remover.",
-    badges: ["Individual account"],
+    badges: ["Individual Account"],
     warranty: "Full Duration Warranty",
     specs: [
       "100M+ premium templates and assets",
-      "Brand kit with custom fonts and colours",
+      "Brand kit with custom fonts and colors",
       "Background remover and Magic tools",
       "Individual account access",
     ],
@@ -446,7 +446,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["Individual account", "12 Months"],
         price: 1999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -478,7 +478,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["Shared access", "Pro", "12 Months"],
         price: 4999,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -510,7 +510,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["6 devices", "12 Months"],
         price: 3499,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -541,7 +541,7 @@ export const seedProducts: Product[] = [
         name: "12 Months",
         meta: ["8 devices", "12 Months"],
         price: 5499,
-        badge: "Best value",
+        badge: "Best Value",
       },
     ],
   },
@@ -552,7 +552,7 @@ export const seedProducts: Product[] = [
     tagline: "30,000+ live TV channels",
     summary:
       "Live TV, sports and movie channels in 4K with catch-up, EPG and support for every major device.",
-    badges: ["Best seller"],
+    badges: ["Best Seller"],
     warranty: "Full Duration Warranty",
     specs: [
       "30,000+ live TV channels",
@@ -573,7 +573,7 @@ export const seedProducts: Product[] = [
         name: "6 Months",
         meta: ["1 connection", "4K", "6 Months"],
         price: 1699,
-        badge: "Best value",
+        badge: "Best Value",
       },
       {
         id: "IPTV-12M",

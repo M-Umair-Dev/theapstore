@@ -46,17 +46,17 @@ export default function ReviewsPage() {
 
       <section className="section dark cta-band">
         <div className="container">
-          <h2>Ordered from us before?</h2>
+          <h2>Ordered From Us Before?</h2>
           <p>
             Send us your experience and we will add it to this page. We publish
             the critical ones too.
           </p>
           <div className="hero-actions">
             <Link href="/contact" className="btn btn-primary">
-              Send a review
+              Send a Review
             </Link>
             <Link href="/shop" className="btn btn-secondary">
-              Browse the shop
+              Browse the Shop
             </Link>
           </div>
         </div>

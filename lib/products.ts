@@ -140,7 +140,7 @@ export const categories: Category[] = [
     {
     slug: "uncategorized",
     name: "Uncategorized",
-    description: "Any Random Product.",
+    description: "Products that do not fit another category.",
   },
 ];
 

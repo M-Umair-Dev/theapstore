@@ -22,7 +22,7 @@ type Params = {
 export const metadata: Metadata = {
   title: "Shop",
   description:
-    "Browse our digital catalogue of subscriptions, tools, software and services.",
+    "Browse our digital catalog of subscriptions, tools, software, and services.",
 };
 
 export default async function ShopPage({
@@ -53,7 +53,7 @@ export default async function ShopPage({
       <div className="container" style={{ paddingTop: "var(--space-6)" }}>
         <h1 className="section-title">Shop</h1>
         <p className="section-lead">
-          Browse our digital catalogue of subscriptions, tools, software and
+          Browse our digital catalog of subscriptions, tools, software, and
           services.
           {category && ` Showing ${getCategoryName(category)} only.`}
         </p>
@@ -93,15 +93,15 @@ export default async function ShopPage({
           {items.length === 0 ? (
             <div className="empty-state">
               <h2>
-                {q ? "No products found" : "No products match these filters"}
+                {q ? "No Products Found" : "No Products Match These Filters"}
               </h2>
               <p>
                 {q
-                  ? "Try another search, or clear it to see the full catalogue."
-                  : "Try a different category or price range — the full catalogue is one click away."}
+                  ? "Try another search, or clear it to see the full catalog."
+                  : "Try a different category or price range — the full catalog is one click away."}
               </p>
               <Link href="/shop" className="btn btn-primary">
-                {q ? "Clear search" : "Clear filters"}
+                {q ? "Clear Search" : "Clear Filters"}
               </Link>
             </div>
           ) : (

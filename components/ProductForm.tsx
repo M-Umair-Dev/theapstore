@@ -129,14 +129,14 @@ export default function ProductForm({ product }: { product?: Product }) {
 
           <div className="field">
             <label className="label" htmlFor="slug">
-              URL slug
+              URL Slug
             </label>
             <input
               id="slug"
               name="slug"
               className="input"
               defaultValue={product?.slug}
-              placeholder="generated from the title if left blank"
+              placeholder="Generated from the title if left blank."
             />
             <span className="hint">
               Changing this changes the product URL. The old one stops working.
@@ -178,7 +178,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
           <div className="field field-full">
             <label className="label" htmlFor="tagline">
-              Card tagline
+              Card Tagline
             </label>
             <input
               id="tagline"
@@ -214,13 +214,13 @@ export default function ProductForm({ product }: { product?: Product }) {
               placeholder="Popular, Pakistan Plans"
             />
             <span className="hint">
-              Comma separated. Shown on the product card image.
+              Comma-separated. Shown on the product card image.
             </span>
           </div>
 
           <div className="field field-full">
             <label className="label" htmlFor="specs">
-              Key features
+              Key Features
             </label>
             <textarea
               id="specs"
@@ -248,7 +248,7 @@ export default function ProductForm({ product }: { product?: Product }) {
               name="comingSoon"
               defaultChecked={product?.comingSoon}
             />
-            Coming soon (hides the buy buttons)
+            Coming Soon (hides the buy buttons)
           </label>
         </div>
       </div>
@@ -284,7 +284,7 @@ export default function ProductForm({ product }: { product?: Product }) {
 
         <div className="field" style={{ marginTop: "var(--space-4)" }}>
           <label className="label" htmlFor="image">
-            {product?.imageContentType ? "Replace image" : "Upload image"}
+            {product?.imageContentType ? "Replace Image" : "Upload Image"}
           </label>
           <input
             id="image"
@@ -297,7 +297,7 @@ export default function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <div className="admin-panel">
-        <h2>Product type</h2>
+        <h2>Product Type</h2>
         <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
           Generic products use the plans list, or the free-form option matrix if
           you turn it on. Netflix and Amazon Prime use the fixed duration ×
@@ -306,7 +306,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         <div className="form-row">
           <div className="field">
             <label className="label" htmlFor="productType">
-              Variation type
+              Variation Type
             </label>
             <select
               id="productType"
@@ -315,7 +315,7 @@ export default function ProductForm({ product }: { product?: Product }) {
               value={productType}
               onChange={(e) => chooseType(e.target.value as ProductType)}
             >
-              <option value="generic">Generic product</option>
+              <option value="generic">Generic Product</option>
               <option value="netflix">Netflix</option>
               <option value="prime">Amazon Prime Video</option>
             </select>
@@ -335,7 +335,7 @@ export default function ProductForm({ product }: { product?: Product }) {
       ) : (
         <>
           <div className="admin-panel">
-            <h2>Advanced options</h2>
+            <h2>Advanced Options</h2>
             <p className="hint" style={{ marginBottom: "var(--space-5)" }}>
               Turn this on for generic products sold through a choice matrix.
               The simple plans list is hidden while it is on.
@@ -487,7 +487,7 @@ export default function ProductForm({ product }: { product?: Product }) {
                     className="input"
                     value={row.badge}
                     onChange={(e) => patch(row.key, "badge", e.target.value)}
-                    placeholder="Best value"
+                    placeholder="Best Value"
                   />
                 </div>
               </div>
@@ -501,7 +501,7 @@ export default function ProductForm({ product }: { product?: Product }) {
           style={{ marginTop: "var(--space-4)" }}
           onClick={() => setRows((prev) => [...prev, newRow()])}
         >
-          Add another plan
+          Add Another Plan
         </button>
         </div>
       )}
@@ -518,7 +518,7 @@ export default function ProductForm({ product }: { product?: Product }) {
           className="btn btn-primary"
           disabled={pending}
         >
-          {pending ? "Saving…" : product ? "Save changes" : "Create product"}
+          {pending ? "Saving…" : product ? "Save Changes" : "Create Product"}
         </button>
         <Link href="/admin/products" className="btn btn-secondary">
           Cancel

@@ -12,32 +12,32 @@ export const legalPages: Record<
       "Short answers to the questions we get asked most about ordering, delivery and warranty.",
     sections: [
       {
-        heading: "How do I receive my order?",
+        heading: "How Do I Receive My Order?",
         body: [
           "Once payment is confirmed, we send your access details by email or WhatsApp. Most orders are delivered within 30 minutes during business hours.",
         ],
       },
       {
-        heading: "How does the warranty work?",
+        heading: "How Does the Warranty Work?",
         body: [
           "Every plan carries the warranty shown on its product page. If your access stops working inside that window, contact us and we replace it at no cost.",
           "The warranty covers access problems only. It does not cover a change of mind, or damage caused by altering account settings against the access guidelines.",
         ],
       },
       {
-        heading: "Which payment methods do you accept?",
+        heading: "Which Payment Methods Do You Accept?",
         body: [
-          "Bank transfer, Easypaisa and JazzCash. After placing your order you upload the payment screenshot and we verify it before delivery.",
+          "Bank transfer, EasyPaisa, and JazzCash. After placing your order, you upload the payment screenshot and we verify it before delivery.",
         ],
       },
       {
-        heading: "Can I use a shared plan on my own profile?",
+        heading: "Can I Use a Shared Plan on My Own Profile?",
         body: [
           "Yes. Shared plans give you a private profile inside an account we manage. Your viewing history and recommendations stay yours.",
         ],
       },
       {
-        heading: "What if a plan is out of stock?",
+        heading: "What If a Plan Is Out of Stock?",
         body: [
           "Products marked Coming Soon are restocking. Contact us and we will tell you when the next batch lands.",
         ],
@@ -50,21 +50,21 @@ export const legalPages: Record<
       "Every product in this store is digital. Nothing ships physically, so delivery means handing over your access.",
     sections: [
       {
-        heading: "Delivery time",
+        heading: "Delivery Time",
         body: [
           "Orders placed during business hours are usually delivered within 15 to 60 minutes of payment verification.",
           "Orders placed overnight are delivered the next morning.",
         ],
       },
       {
-        heading: "How delivery happens",
+        heading: "How Delivery Happens",
         body: [
           "We send credentials, an invitation link, or an upgrade applied to your own account — depending on what the plan uses.",
           "You will receive delivery instructions along with the access details. Follow them exactly to keep the warranty valid.",
         ],
       },
       {
-        heading: "If delivery is late",
+        heading: "If Delivery Is Late",
         body: [
           "Contact us with your order number. If we cannot deliver, you get a full refund — no questions asked.",
         ],
@@ -83,16 +83,16 @@ export const legalPages: Record<
         ],
       },
       {
-        heading: "When replacement is not available",
+        heading: "When Replacement Is Not Available",
         body: [
           "If we cannot restore or replace your access, we refund the unused portion of your plan.",
         ],
       },
       {
-        heading: "What voids a replacement",
+        heading: "What Voids a Replacement",
         body: [
-          "Changing passwords, recovery details, billing or security settings against the access guidelines voids the warranty on that plan.",
-          "Exceeding the number of users, profiles, screens or devices included in your plan also voids it.",
+          "Changing passwords, recovery details, billing, or security settings against the account guidelines voids the warranty on that plan.",
+          "Exceeding the number of users, profiles, screens, or devices included in your plan also voids it.",
         ],
       },
     ],
@@ -102,13 +102,13 @@ export const legalPages: Record<
     intro: `How ${site.name} handles the information you give us.`,
     sections: [
       {
-        heading: "What we collect",
+        heading: "What We Collect",
         body: [
           "Your name, contact details and order information. If you upload a payment screenshot, we keep it only to verify the payment.",
         ],
       },
       {
-        heading: "How we use it",
+        heading: "How We Use It",
         body: [
           "To deliver your order, provide warranty support, and respond when you contact us. Nothing else.",
         ],
@@ -120,7 +120,7 @@ export const legalPages: Record<
         ],
       },
       {
-        heading: "Your choices",
+        heading: "Your Choices",
         body: [
           `Ask us to delete your order history at any time by writing to ${site.email}.`,
         ],
@@ -134,15 +134,15 @@ export const legalPages: Record<
       {
         heading: "Orders",
         body: [
-          "An order is confirmed once payment is verified. We may cancel an order and refund it in full if we cannot fulfil it.",
+          "An order is confirmed once payment is verified. We may cancel an order and refund it in full if we cannot fulfill it.",
         ],
       },
       {
-        heading: "Access and account guidelines",
+        heading: "Account Guidelines",
         body: [
           "Use only the access type stated on your plan.",
-          "Do not alter passwords, recovery information, billing or security settings unless the delivery instructions tell you to.",
-          "Do not exceed the users, profiles, screens or devices included in your plan.",
+          "Do not alter passwords, recovery information, billing, or security settings unless the delivery instructions tell you to.",
+          "Do not exceed the users, profiles, screens, or devices included in your plan.",
           "Keep your credentials private. Contact support before making major changes to an account.",
           "Product-specific terms override these general guidelines where they differ.",
         ],
@@ -161,19 +161,19 @@ export const legalPages: Record<
       "We would rather fix your access than keep your money. Here is how that works.",
     sections: [
       {
-        heading: "Before delivery",
+        heading: "Before Delivery",
         body: [
           "Cancel any time before we deliver and you get a full refund.",
         ],
       },
       {
-        heading: "After delivery",
+        heading: "After Delivery",
         body: [
           "If your access fails within the warranty window, we replace it. If we cannot replace it, we refund the unused portion of the plan.",
         ],
       },
       {
-        heading: "How refunds are paid",
+        heading: "How Refunds Are Paid",
         body: [
           "Refunds go back through the same payment method you used, within 3 to 5 business days of approval.",
         ],

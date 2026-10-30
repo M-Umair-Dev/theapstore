@@ -18,7 +18,7 @@ export default async function EditProductPage({
     <>
       <div className="admin-head">
         <div>
-          <h1>Edit product</h1>
+          <h1>Edit Product</h1>
           <p>{product.title}</p>
         </div>
         <Link
@@ -26,7 +26,7 @@ export default async function EditProductPage({
           target="_blank"
           className="btn btn-secondary"
         >
-          View on store
+          View on Store
         </Link>
       </div>
 

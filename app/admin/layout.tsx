@@ -54,11 +54,11 @@ export default async function AdminLayout({
         <div className="admin-sidebar-foot">
           <span>{session.user?.email}</span>
           <Link href="/" target="_blank">
-            View storefront
+            View Storefront
           </Link>
           <form action={signOutAction}>
             <button type="submit" className="link-btn">
-              Sign out
+              Sign Out
             </button>
           </form>
         </div>

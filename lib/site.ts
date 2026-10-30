@@ -4,9 +4,9 @@
  */
 export const site = {
   name: "TheApStore",
-  tagline: "Software as Service",
+  tagline: "Software as a Service",
   description:
-    "A modern digital store providing digital subscriptions, tools and online services.",
+    "A modern store for digital subscriptions, tools, and online services.",
   since: 2020,
   /**
    * Store contact address, shown on the Contact page and in the order

@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 /**
  * The product page sections are native details elements. This keeps one open
  * at a time, starts on the first section, and still lets that section close.
- * resetKey is the product slug so a new product starts on Key features again.
+ * resetKey is the product slug so a new product starts on Key Features again.
  */
 export default function ProductFolds({
   resetKey,
