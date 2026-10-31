@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import CategoryIcon from "@/components/CategoryIcon";
 import ProductCard from "@/components/ProductCard";
 import { getCategory } from "@/lib/products";
 import { productsInCategory } from "@/lib/repo";
@@ -40,7 +41,10 @@ export default async function CategoryPage({
       />
 
       <div className="container" style={{ paddingTop: "var(--space-6)" }}>
-        <h1 className="section-title">{category.name}</h1>
+        <h1 className="section-title cat-heading">
+          <CategoryIcon slug={category.slug} />
+          {category.name}
+        </h1>
         <p className="section-lead">
           {category.description} {items.length}{" "}
           {items.length === 1 ? "product" : "products"} available.

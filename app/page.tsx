@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CategoryIcon from "@/components/CategoryIcon";
 import ProductCard from "@/components/ProductCard";
 import { startingPrice } from "@/lib/options";
 import { formatPrice, categories } from "@/lib/products";
@@ -175,7 +176,10 @@ export default async function Home() {
                 className="cat-tile"
               >
                 <span className="cat-count">{c.count} products</span>
-                <span className="cat-name">{c.name}</span>
+                <span className="cat-name">
+                  <CategoryIcon slug={c.slug} />
+                  {c.name}
+                </span>
                 <span className="cat-desc">{c.description}</span>
               </Link>
             ))}

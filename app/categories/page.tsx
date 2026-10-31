@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import CategoryIcon from "@/components/CategoryIcon";
 import { categories } from "@/lib/products";
 import { listProducts } from "@/lib/repo";
 
@@ -40,7 +41,10 @@ export default async function CategoriesPage() {
         {withCounts.map((c) => (
           <Link key={c.slug} href={`/category/${c.slug}`} className="cat-tile">
             <span className="cat-count">{c.count} products</span>
-            <span className="cat-name">{c.name}</span>
+            <span className="cat-name">
+              <CategoryIcon slug={c.slug} />
+              {c.name}
+            </span>
             <span className="cat-desc">{c.description}</span>
           </Link>
         ))}

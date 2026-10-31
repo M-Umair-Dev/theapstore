@@ -628,7 +628,8 @@
   width: 100%;
   aspect-ratio: 16 / 10;
   margin-bottom: var(--space-4);
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   border-radius: var(--radius);
   background: #111111;
 }
@@ -880,8 +881,33 @@
 }
 
 .cat-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   font-size: 18px;
   font-weight: 700;
+}
+
+.cat-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cat-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+.cat-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .cat-desc {
@@ -913,6 +939,28 @@
 .value-card h3 {
   font-size: 17px;
   font-weight: 700;
+}
+
+.value-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.value-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.value-mark svg {
+  width: 20px;
+  height: 20px;
 }
 
 .value-card p {
@@ -1742,6 +1790,7 @@
 }
 
 .cart-thumb {
+  position: relative;
   display: grid;
   place-items: center;
   width: 100%;
@@ -1756,9 +1805,12 @@
 }
 
 .cart-thumb img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .cart-title {
@@ -1950,6 +2002,44 @@
 
 .prose strong {
   color: var(--text);
+}
+
+.about-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: var(--space-7);
+  align-items: center;
+  padding-top: var(--space-2);
+}
+
+.about-intro-copy {
+  max-width: none;
+  padding-bottom: 0;
+}
+
+.about-photo {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.about-photo:not(:has(img)) {
+  aspect-ratio: 1;
+}
+
+.about-photo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
 }
 
 /* ---------- Reviews ---------- */
@@ -2150,7 +2240,8 @@
   }
 
   .hero-grid,
-  .shop-layout {
+  .shop-layout,
+  .about-intro {
     grid-template-columns: minmax(0, 1fr);
   }
 
