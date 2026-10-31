@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { posts } from "@/lib/content";
+import { listPublishedBlogs } from "@/lib/blogs";
+import { blogPictures, blogPublicMediaSrc } from "@/lib/upload-rules";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -9,14 +12,9 @@ export const metadata: Metadata = {
     "Guides and plain-English explainers about the subscriptions we sell.",
 };
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+export default async function BlogPage() {
+  const blogs = await listPublishedBlogs();
 
-export default function BlogPage() {
   return (
     <>
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Blog" }]} />
@@ -29,19 +27,35 @@ export default function BlogPage() {
         </p>
       </div>
 
-      <div
-        className="container grid grid-2"
-        style={{ paddingBlock: "var(--space-7) var(--space-8)" }}
-      >
-        {posts.map((post) => (
-          <article className="value-card" key={post.slug}>
-            <span className="cat-count">{formatDate(post.date)}</span>
-            <h2 style={{ fontSize: 20, marginTop: "var(--space-3)" }}>
-              {post.title}
-            </h2>
-            <p style={{ marginTop: "var(--space-3)" }}>{post.excerpt}</p>
-          </article>
-        ))}
+      <div className="container" style={{ paddingBlock: "var(--space-7) var(--space-8)" }}>
+        {blogs.length === 0 ? (
+          <p className="section-lead">No posts are published yet. Check back soon.</p>
+        ) : (
+          <div className="grid grid-3">
+            {blogs.map((blog) => {
+              const cover = blogPictures(blog)[0];
+              return (
+                <article className="card blog-card" key={blog.id}>
+                  {cover && (
+                    <div className="card-media blog-cover">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={blogPublicMediaSrc(cover)} alt={blog.title} />
+                    </div>
+                  )}
+                  <div className="card-body">
+                    <h2 className="card-title">
+                      <Link href={`/blog/${blog.slug}`}>{blog.title}</Link>
+                    </h2>
+                    <p className="card-tag">{blog.description}</p>
+                    <Link href={`/blog/${blog.slug}`} className="btn btn-primary btn-sm">
+                      Watch Details
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <section className="section dark cta-band">

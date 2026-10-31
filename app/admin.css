@@ -739,3 +739,65 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.cell-clip {
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.blog-file-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-block: var(--space-4);
+}
+
+.blog-file {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-4);
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+}
+
+.blog-file img,
+.blog-file video {
+  width: min(100%, 320px);
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #111111;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+}
+
+/* Clip instead of display:none so the file dialog still opens. */
+label.btn {
+  position: relative;
+}
+
+.file-trigger {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.blog-file-error {
+  margin: 0;
+  color: var(--primary-on-dark);
+  font-size: 14px;
+  font-weight: 600;
+}

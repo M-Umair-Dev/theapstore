@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/auth";
 import Logo from "@/components/Logo";
 import { site } from "@/lib/site";
+import { countBlogs } from "@/lib/blogs";
 import { adminStats } from "@/lib/repo";
 import { signOutAction } from "./actions";
 import "../admin.css";
@@ -19,7 +20,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await requireAdmin();
-  const stats = await adminStats();
+  const [stats, blogCount] = await Promise.all([adminStats(), countBlogs()]);
 
   const nav = [
     { href: "/admin", label: "Dashboard" },
@@ -27,6 +28,7 @@ export default async function AdminLayout({
     { href: "/admin/orders", label: "Orders", count: stats.orders },
     { href: "/admin/customers", label: "Customers", count: stats.customers },
     { href: "/admin/payments", label: "Payment Methods" },
+    { href: "/admin/blog", label: "Blog", count: blogCount },
   ];
 
   return (
