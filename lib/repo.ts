@@ -569,6 +569,48 @@ export async function savePaymentSettings(methods: PaymentMethodConfig[]) {
   );
 }
 
+/* ---------------- homepage hero ---------------- */
+
+const HERO_ID = "hero";
+
+/** Which catalogue slug the homepage promo tile should feature. */
+export type HeroSetting = {
+  productSlug: string;
+  updatedAt: Date;
+};
+
+/**
+ * Reads `{ _id: "hero" }`. Missing or empty means the homepage keeps its
+ * automatic fallback. Never writes.
+ */
+export async function getHeroSetting(): Promise<HeroSetting | null> {
+  await ensureIndexes();
+  const doc = await settings().findOne({ _id: HERO_ID });
+  const productSlug =
+    typeof doc?.productSlug === "string" ? doc.productSlug.trim() : "";
+  if (!productSlug) return null;
+  const updatedAt = doc?.updatedAt instanceof Date ? doc.updatedAt : new Date(0);
+  return { productSlug, updatedAt };
+}
+
+/** Upserts only `productSlug` and `updatedAt` on `{ _id: "hero" }`. */
+export async function saveHeroSetting(productSlug: string) {
+  await ensureIndexes();
+  await settings().updateOne(
+    { _id: HERO_ID },
+    { $set: { productSlug, updatedAt: new Date() } },
+    { upsert: true },
+  );
+}
+
+/** Netflix, else the first product. Used only when no valid hero slug is stored. */
+export function fallbackHeroProduct<T extends { slug: string }>(
+  all: readonly T[],
+): T | undefined {
+  if (all.length === 0) return undefined;
+  return all.find((p) => p.slug === "netflix-premium") ?? all[0];
+}
+
 /** Only what a customer needs to pay, and only methods they may pick. */
 export async function availablePaymentMethods(): Promise<PaymentMethodConfig[]> {
   const { methods } = await getPaymentSettings();

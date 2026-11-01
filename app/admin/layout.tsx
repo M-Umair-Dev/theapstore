@@ -29,6 +29,7 @@ export default async function AdminLayout({
     { href: "/admin/customers", label: "Customers", count: stats.customers },
     { href: "/admin/payments", label: "Payment Methods" },
     { href: "/admin/blog", label: "Blog", count: blogCount },
+    { href: "/admin/hero", label: "Hero Section" },
   ];
 
   return (

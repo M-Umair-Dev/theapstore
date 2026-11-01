@@ -801,3 +801,81 @@ label.btn {
   font-size: 14px;
   font-weight: 600;
 }
+
+/* ---------- Homepage hero picker ---------- */
+
+.hero-combo {
+  position: relative;
+}
+
+.hero-list {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  margin: 0;
+  padding: var(--space-2);
+  overflow: auto;
+  list-style: none;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #111111;
+}
+
+.hero-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hero-option:hover,
+.hero-option.is-active {
+  background: #1c1c1c;
+}
+
+.hero-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #000;
+  font-weight: 800;
+  color: var(--dark-muted);
+}
+
+.hero-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-preview {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+.hero-preview img {
+  width: 260px;
+  max-width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: 1px solid var(--dark-border);
+  border-radius: var(--radius);
+  background: #111111;
+}

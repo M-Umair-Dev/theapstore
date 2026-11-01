@@ -3,7 +3,7 @@ import CategoryIcon from "@/components/CategoryIcon";
 import ProductCard from "@/components/ProductCard";
 import { startingPrice } from "@/lib/options";
 import { formatPrice, categories } from "@/lib/products";
-import { listProducts } from "@/lib/repo";
+import { fallbackHeroProduct, getHeroSetting, listProducts } from "@/lib/repo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -43,7 +43,7 @@ const steps = [
 ];
 
 export default async function Home() {
-  const all = await listProducts();
+  const [all, hero] = await Promise.all([listProducts(), getHeroSetting()]);
 
   if (all.length === 0) {
     return (
@@ -60,7 +60,10 @@ export default async function Home() {
   }
 
   const featured = all.filter((p) => p.featured).slice(0, 10);
-  const promo = all.find((p) => p.slug === "netflix-premium") ?? all[0];
+  const fallback = fallbackHeroProduct(all) ?? all[0];
+  const promo =
+    (hero ? all.find((p) => p.slug === hero.productSlug) : undefined) ??
+    fallback;
   const cats = categories.map((c) => ({
     ...c,
     count: all.filter((p) => p.category === c.slug).length,
